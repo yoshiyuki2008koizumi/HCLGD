@@ -1,0 +1,23 @@
+# VS Code
+.vscode/
+
+# Node.js
+node_modules/
+
+# build結果
+dist/
+build/
+
+# 一時ファイル
+*.log
+*.tmp
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# macOS
+.DS_Store
+
+#del
+x_*.*

@@ -1,0 +1,76 @@
+#errorBox { /*  エラーメッセージのスタイル */
+  display: none;
+  background: #fee;
+  color: #900;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #900;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+button, select  {  /* ボタンの標準設定 */
+  height: 25px;
+  line-height: 25px; /* テキストを縦中央に */
+  font-size: 14px;   /* 読みやすいサイズ */
+}
+
+
+#acList {
+  width: 400px; height: 200px; 
+  font-family: monospace;
+}
+
+table {
+  border-collapse: collapse;   /* 二重枠を防ぐ */
+  margin-top: 10px;
+  border: 1px solid #000;      /* テーブル外枠 */
+}
+td {
+  border: 1px solid #000;      /* セルの枠を単線に */
+  padding: 4px;
+  min-width: 60px;
+  text-align: right;
+}
+/* テーブルのセル内の input にだけ適用 */
+table td input {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: right;
+  border: none;
+}
+
+/* canvas多重化  */
+/*
+.canvasBox{
+  border:2px solid black;
+}
+
+.canvasBox canvas{
+  display:block;
+}
+*/
+.canvasBox{
+  position: relative;
+  border:2px solid black;
+}
+
+.canvasBox canvas{
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* 親を横並びにする */
+.rowContainer {
+  display: flex;
+  align-items: flex-start; /* 上揃え */
+  gap: 20px;               /* 左右の間隔 */
+}
+
+/* 左側テーブルは縦に並ぶが、非表示は無視される */
+.tableContainer div {
+  border: 1px solid black;
+  text-align: center;
+  padding: 5px;
+}

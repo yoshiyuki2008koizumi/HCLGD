@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+   <link rel="icon" href="data:," >
+  <meta charset="utf-8">
+  <title>HCLGD</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+<!-- DOM -->
+<button id="reloadBtn">再起動</button>           <!-- Top -->
+<button id="btnOld">旧アプリを表示</button>
+<select id="btnHide">
+  <option value="block">表示</option>
+  <option value="none">非表示</option>
+</select>
+<span id="dbgBtn"></span>       <!-- 子ページデバッグボタン -->
+<h1 id="title">HCLGDV</h1>              <!-- タイトル -->
+<div id="upDbgContent"></div>           <!-- 上部デバッグボタン -->
+<h3 id="childTitle">chile title</h3>    <!-- 子タイトル -->
+<div id="childChgMsg"></div>              <!-- 子ページ切り替え中表示 -->
+<div id="childContent"></div>             <!-- 子ページの表示エリア -->
+<h3 id="errDisp"></h3>                    <!-- エラー表示 -->
+<iframe 
+  id="oldApp"
+  style="width:100%; height:80vh; border:1px solid #999; display:none;"
+></iframe>                                <!-- OLDの表示 -->
+
+<!-- error -->
+<div id="errorBox"></div>
+<h3 id="errDisp"></h3>    <!-- エラー表示 -->
+
+ <!-- EMSモジュール -->
+<script type="module" src="global.js"></script>
+<script type="module" src="start.js"></script>
+</body>
+</html>
