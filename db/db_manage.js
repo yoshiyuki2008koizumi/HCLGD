@@ -1,5 +1,5 @@
 import { DB_NAME, DB_VERSION, STORES} from "./schema.js";
-import { db, dbp, dbData } from "./dataBase.js";
+import { db, dbData } from "./dataBase.js";
 import { cp } from "../childePage.js";
 
 import { IDB } from "./indexdDB.js";
@@ -87,8 +87,6 @@ async function deleatDB(){
 */
 async function initDB(){  // 初期化
   showStatus("初期化開始...");
-  //const {db, isNew, error} = await IDB.openDB();
-  //const {db, isNew, error} = await IDB.openDB_init(DB_NAME, DB_VERSION, STORES);
   await IDB.openDB_init(DB_NAME, DB_VERSION, STORES);
 
   showStatus("初期化完了");

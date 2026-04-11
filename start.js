@@ -1,5 +1,5 @@
 // start.js
-import { db, dbp, dbData } from "./db/dataBase.js";
+import { db, dbData } from "./db/dataBase.js";
 import { cp } from "./childePage.js";
 import { parts } from "./parts/parts.js";
 //import { anDesign } from "./design/acNumDesign_2.js"; //空力計算サンプル

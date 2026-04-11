@@ -296,6 +296,8 @@ function initDB(dbp) {	//③ 初期化処理
   *****************/
  export const IDB ={
   deleteDB, openDB, openDB_init,
+  get dbp(){ return dbp; }, 
+  set dbp(val){ dbp = val;}, 
 };
 //import { IDB } from "./indexdDB.js";
 //end of file
