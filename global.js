@@ -1,3 +1,4 @@
+// global.js
 import * as G  from "./massage.js";
 import * as G2 from "./common.js";
 
