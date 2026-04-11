@@ -9,10 +9,15 @@ const chtml = `
   <input type="text" id="newTname" placeholder="新ターゲット名">
 </div>
 <div>
+  　<select id="dispSel" class="midSelecｖ">
+    <option value="date">日付順</option>
+    <option value="name">名前順</option>
+  </select>　
+  <button id="selectBtn" >選択</button>
+  <button id="delNameBtn" >削除</button><br>
   <select id="acList" size="10"></select><br>
-  <button id="dateSortBtn" >日付順</button>
-  <button id="nameSortBtn" >名前順</button>
-  <button id="delNameBtn" >削除</button>
+
+
   
 </div>
 <button id="toDataBtn">戻る</button>
@@ -25,8 +30,8 @@ cMsg(`apList`)
   if (initDom != false) { //親ページのDOM設定
     chTitle(`機体選択`);
 //    setDomEvent("btn2Start","click", restart, "機体選択");
-    setDomEvent("dateSortBtn","click", () => setNameSort(false));
-    setDomEvent("nameSortBtn","click", () => setNameSort(true));
+    setDomEvent("dispSel","change", dispSelect);
+    setDomEvent("selectBtn","click", DCButtan);
     setDomEvent("delNameBtn","click", delApList);
   
     //ターゲット名(input)のdelキーの有効化
@@ -103,10 +108,15 @@ cMsg(`del sheet ${name}`)
   
 }
 
-async function apListDC(event) {  //機体の追加　ダブルクリック処理
-  const dcName = event.target.value.trim(); // ダブルクリック名
-//  if (!dcName) return;  
-//cMsg("ダブルクリック:", dcName);
+function dispSelect(event){ //リスト表示切替
+  const sel = (event.target.value === "name")? true: false;
+  setNameSort(sel)
+}
+
+async function DCSelect(dcName) {  //機体の追加　ダブルクリック処理
+ cMsg("ダブルクリック:", dcName);
+  if (!dcName) return;
+
   const input = document.getElementById("newTname");
   const newTname = input.value.trim();  //ターゲット名
   if(newTname) {  //新規作成
@@ -129,6 +139,16 @@ cMsg(`newTarget:  ${newTname} (dcName: ${dcName})`);
 cMsg(`target:  ${dcName}`);
     db.req({req: "design", apName: dcName});
   }
+}
+function DCButtan(){ //ダブルクリックボタン
+  const sel=document.getElementById("acList");
+  const name = sel.value;
+cMsg (`DCButtan ${name}`)
+  DCSelect(name);  
+}
+async function apListDC(event) {  //機体の追加　ダブルクリック処理
+  const dcName = event.target.value.trim(); // ダブルクリック名
+  DCSelect(dcName);  
 }
 
 const api = {
