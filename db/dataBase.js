@@ -121,7 +121,12 @@ function migrate(db,version){
   }
 }
 
-async function init() {   //IndexDB初期書き込み
+
+async function initCheck() {   //IndexDB起動時のチェック
+}
+
+async function init(mng = null) {   //mng==null アプリ起動 IndexDB初期書き込み
+  let onupdb = false;
 
   function openDB(name, version) { //Open処理　ストア作成
   cMsg_SL(`🔹DBOpen: ${name}, version: ${version}`);
@@ -134,11 +139,11 @@ async function init() {   //IndexDB初期書き込み
       const req = indexedDB.open(name, version);
   cMsg_SL("open 呼び出し直後");
       req.onupgradeneeded = (e) => {
-        const db = req.result;
+      const onupdb = req.result;
   cMsg_SL("ストア作成");
         for (const store of STORES) {
-          if (!db.objectStoreNames.contains(store.name)) {
-            db.createObjectStore(store.name, {
+          if (!onupdb.objectStoreNames.contains(store.name)) {
+            onupdb.createObjectStore(store.name, {
               keyPath: "id",
   //            autoIncrement: true
             });
@@ -147,6 +152,9 @@ async function init() {   //IndexDB初期書き込み
         }
       };
       req.onsuccess = () => {
+        if(onupdb !== false){
+          //return false;
+        }
   cMsg_SL("DBオープン成功");
         resolve(req.result);
       };
@@ -165,7 +173,9 @@ async function init() {   //IndexDB初期書き込み
   if(dbp !== null){
     dbp.close();   //DB完了
   }
-  await deleteDB(DB_NAME);       //DB削除し全て作り直し
+
+//  await deleteDB(DB_NAME);       //DB削除し全て作り直し
+
   dbp = await openDB(DB_NAME, DB_VERSION, migrate); //Open DB作成
 
   for (const store of STORES) {                 // ストアごとにデータ登録
@@ -189,6 +199,7 @@ async function init() {   //IndexDB初期書き込み
 
   await db.dbRead(); cMsg(`読み出し完了`)
 } //init
+
 function close(){
   if (dbp) {
  cMsg_SL("🔹 DB close");
@@ -303,6 +314,8 @@ function deleteDB(name) {  //DB削除処理
   });
 } //deleteDB
 
+function debug(){}
+
 function openDB(name, version=undefined, migrate = undefined) { //Open処理　ストア作成
  cMsg_SL(`🔹DBOpen: ${name}, version: ${version}`);
   return new Promise((resolve, reject) => {
@@ -397,6 +410,7 @@ async function chgAp(name){//機体データid変更（削除して追加）
 
 export const db = {
   dbRead,
-  init, close, req, update, dbWrite ,dbDelete,
-  delAp, addAp, saveAp, chgAp };
+  init, initCheck, close, req, update, dbWrite ,dbDelete,
+  delAp, addAp, saveAp, chgAp, debug };
+//import { db, dbp, dbData } from "./dataBase.js";
 //end of file

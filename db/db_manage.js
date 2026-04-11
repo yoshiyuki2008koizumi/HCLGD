@@ -2,6 +2,8 @@ import { DB_NAME, DB_VERSION, STORES} from "./schema.js";
 import { db, dbp, dbData } from "./dataBase.js";
 import { cp } from "../childePage.js";
 
+import { IDB } from "./indexdDB.js";
+
 
 // HTML UI
 const chtml = `
@@ -11,6 +13,7 @@ const chtml = `
 <button id="btnBackup">バックアップ</button>
 <input type="file" id="restoreFile" style="display:none">
 <button id="btnRestore">復元</button>
+<button id="btnDelete">削除</button>
 <button id="btnEnd">終了</button>
 
 <br><br>
@@ -48,6 +51,7 @@ export function init() {// 初期化
   setDomEvent('btnDbInit', 'click', initDB);
   setDomEvent('btnBackup', 'click', backupDB);
   setDomEvent('btnDbUpdate', 'click', updateDB);
+  setDomEvent('btnDelete', 'click', deleatDB);
 
   // 復元ボタン
   setDomEvent('btnRestore', 'click', () => {
@@ -64,9 +68,29 @@ export function init() {// 初期化
   setDomEvent('btnEnd', 'click', close);
 }
 
+async function deleatDB(){
+  showStatus("削除開始...");
+
+  try {
+    await IDB.deleteDB();
+    showStatus("削除完了");
+  } catch (e) {
+    showStatus("削除失敗: " + e.message);
+  }
+}
+/*
+  function deleatDB(){
+  showStatus("削除開始...");
+  IDB.deleteDB();
+  showStatus("削除完了");
+}
+*/
 async function initDB(){  // 初期化
   showStatus("初期化開始...");
-  await db.init();
+  //const {db, isNew, error} = await IDB.openDB();
+  //const {db, isNew, error} = await IDB.openDB_init(DB_NAME, DB_VERSION, STORES);
+  await IDB.openDB_init(DB_NAME, DB_VERSION, STORES);
+
   showStatus("初期化完了");
 }
 
@@ -220,4 +244,7 @@ const api = {
 };
 cp.childeMap.db_m = api; //登録
 
-export const ed = { init, showStatus, clearShowStatus };
+function debug(){}
+
+export const ed = { init, showStatus, clearShowStatus, debug };
+//import { ed } from "./db_manage.js";

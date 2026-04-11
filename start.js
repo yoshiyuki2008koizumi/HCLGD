@@ -3,6 +3,7 @@ import { db, dbp, dbData } from "./db/dataBase.js";
 import { cp } from "./childePage.js";
 import { parts } from "./parts/parts.js";
 //import { anDesign } from "./design/acNumDesign_2.js"; //空力計算サンプル
+import { IDB } from "./db/indexdDB.js";
 
 const upDbg = `
 <!-- デバッグ/操作ボタン -->　　
@@ -82,8 +83,9 @@ async function init(initDom = false) {
 async function db_dbRead(){
   if(10){
  //   debugger
-    await db.dbRead();
-    dbData.target.exc = "aaa";   // debug★★
+  //await IDB.openDB_init(DB_NAME, DB_VERSION, STORES);
+  await IDB.openDB_init();//DB_NAME, DB_VERSION, STORES);
+  dbData.target.exc = "aaa";   // debug★★
   }
 }
 
