@@ -8,7 +8,7 @@ export const ixDB_ORG = {
     "id": 0,
     "exc": "aa",
     "apList": [
-      ["aaa"   , "2026-01-16"]
+      
     ]
   },
   dataID: {

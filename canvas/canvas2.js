@@ -77,7 +77,8 @@ function setSize(xy) {  //canvasサイズ設定
   canvas.height = Math.round(ctx_xy[1] * dpi / 25.4);
   canvas.style.width = canvas.width + "px";
   canvas.style.height = canvas.height + "px";
-  return canvas.style.width;
+  //return canvas.style.width;
+  return canvas.width + "px";;
 }//setSize
 function clear(){ //消去
   ctx.save(); // ← 状態を全部保存（色・太さ・その他全て）
