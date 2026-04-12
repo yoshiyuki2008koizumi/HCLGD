@@ -138,14 +138,13 @@ const chtml = `
     <div id="dgnTable2">TBL1</div>
     <div id="dgnTable3">TBL1</div>
   </div>
-</div>
-
   <div id="canvasBoxP" class="canvasBox"> <!-- 右側 Canvas -->
     <canvas id="baseP"></canvas>
     <canvas id="viewP"></canvas>
     <canvas id="partP"></canvas>
     <canvas id="workP"></canvas>
   </div>
+</div>
 
 <hr> 
 
