@@ -41,15 +41,6 @@ table td input {
 }
 
 /* canvas多重化  */
-/*
-.canvasBox{
-  border:2px solid black;
-}
-
-.canvasBox canvas{
-  display:block;
-}
-*/
 .canvasBox{
   position: relative;
   border:2px solid black;
@@ -73,4 +64,9 @@ table td input {
   border: 1px solid black;
   text-align: center;
   padding: 5px;
+}
+
+/* テーブル選択枠で見える化 */
+.active {
+  box-shadow: inset 0 0 0 2px blue;
 }

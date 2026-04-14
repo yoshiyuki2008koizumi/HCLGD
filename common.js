@@ -23,6 +23,7 @@ export function domDisp(name,on=true){ //DOMの表示制御　表示・非表示
 }
 
 export function fNum(n) {  //表示桁数変換
+  n = Number(n);
   if(n == 0)return "";
   if (n < 10) return n.toFixed(2);   // 2桁
   if (n <= 80) return n.toFixed(1);   // 1桁

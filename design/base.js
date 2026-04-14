@@ -291,6 +291,8 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
       table.setColor(pat,name);
     }
   }
+  MC2.selCanvasBcal("partP", 7);
+  MC2.selCanvasBcal("workP", 0);
   MC2.selCanvasBcal("viewP", 5);
   const result = rectProc(); //矩形翼処理
   if(result != null){ //多重呼び出しで描画済みなので描画しない
@@ -298,11 +300,11 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
       crRLI("rect");    //線データ作成
       //drawRLI();  //パーツcanvas描画  
       if(taperProc()){
-        MC2.selCanvasBcal("partP", 7);
+        MC2.selCanvasBcal("partP");
         crRLI("taper");    //線データ作成
       }
       if(sweepProc()){
-        MC2.selCanvasBcal("workP", 0);
+        MC2.selCanvasBcal("workP");
         crRLI("sweep");    //線データ作成
       }
     }else{

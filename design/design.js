@@ -5,12 +5,34 @@ import { db, dbData } from "../db/dataBase.js";
 import { EMSbase } from "./base.js";
 //3/20　import { MC } from "../canvas/canvas.js";
 import { MC2, A5Hp2 } from "../canvas/canvas2.js";
+import { table } from "./table.js";
 
 //import { anDesign } from "../design/acNumDesign_2.js"; //空力計算サンプル
 
 export let mode = {};   //mode
 export let dsMode = {}; //設計モード呼び出し
 export let mName = "";  //table名
+
+let selectedTd = null;  //最後に選択したテーブル
+function clickHandl(e){ //クリックイベント
+  const td = e.target.closest("td");
+
+  if (selectedTd) {
+    selectedTd.classList.remove("active");
+    if(selectedTd.dataset.name){ //入力セル
+      if(selectedTd.dataset.name.endsWith("_i")){ //入力セル
+        table.onCellCommit({
+          name: selectedTd.dataset.name,
+          val: selectedTd.textContent, //value,
+          pat: selectedTd.closest("table").dataset.block,
+        });
+      }
+    }
+  }
+  selectedTd = td;
+  if (selectedTd) 
+    selectedTd.classList.add("active");
+}
 
 const ddDomTable = {
   base:    { oder: ["mw", "hs", "vs"], aria: [0,1,2], tbl: [0,1,2], canvas: [0,1,2] },
@@ -131,6 +153,9 @@ const chtml = `
 <div id="dgnTable"></div>  <!-- 設計テーブル表示 -->
 
 <hr>
+　<button id="tblDelBtn">Delet</button>
+<button id="tblLeftBtn">Left(+)</button>
+<button id="tblRigthBtn">Rigth(-)</button>
 <div class="rowContainer">
   <div class="tableContainer">  <!-- 左側テーブル類 -->
     <div id="dgnTable0">TBL1</div>  <!-- table -->
@@ -166,6 +191,12 @@ function init(initDom = false) {  //初期起動
     setDomEvent("addNameBtn","click", addNameBtn);
     setDomEvent("mdisp","change", mdispChange);
     setDomEvent("mainEndBtn","click", mainEnd);
+    document.addEventListener("click", clickHandl); //テーブルクリックイベント
+    setDomEvent("tblDelBtn","click", clickTblDel);
+    setDomEvent("tblLeftBtn","click", clickTblLeft);
+    setDomEvent("tblRigthBtn","click", clickTblRigth);
+
+    setDomEvent("mainEndBtn","click", mainEnd);
 
     MC2.baseInit()
 
@@ -187,6 +218,32 @@ function init(initDom = false) {  //初期起動
 
 //anDesign.init(); 
 
+}
+
+function clickTblDel(e){
+  if(selectedTd){
+    if(selectedTd.dataset.name.endsWith("_i")){ //入力セル
+      selectedTd.textContent = "";
+      selectedTd.classList.add("active");
+      e.stopPropagation();
+    }
+  }
+}
+function clickTblLR(e,pm){
+  if(selectedTd){
+    if((selectedTd.dataset.col == 0) ||
+        selectedTd.dataset.name.endsWith("_i") ){ //入力セル
+      table.handleCellAction(pm, selectedTd);
+      e.stopPropagation();
+    }
+  }
+}
+
+function clickTblLeft(e){
+  clickTblLR(e,true);
+}
+function clickTblRigth(e){
+  clickTblLR(e,false);
 }
 
 function mainEnd(){
@@ -230,6 +287,7 @@ cp.childeMap.design = api; //登録
 export const design = {
  init,
  get mName(){ return mName; }, 
+ get selectedTd(){return selectedTd; },
 };
 
 //end of file
