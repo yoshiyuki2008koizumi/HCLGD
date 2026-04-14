@@ -57,7 +57,7 @@ const pdNemu = {  //プルダウン名テーブル　プルダウン表示とク
   area_pd: {opt: ["面積 優先", "無効化"], cvName: ["area_i"]},
   span_pd: {opt: ["半翼幅/翼弦 優先", "無効化"], cvName: ["span_i", "chord_i"]},
   rect_pd: {opt: ["矩形翼", "矩形翼優先"], func: rect_pd},
-  sweep_pd: {opt: ["後退角(0度)","前縁直線","後縁直線","後退角度"],func: sweep_pd},
+  sweep_pd: {opt: ["後退角(0度)","後退角度指定","前縁直線","後縁直線"],func: sweep_pd},
 };
 function setup_pd(pat, td, name, callback){ //setpuからプルダウン設定要求
   const select = document.createElement("select");
@@ -292,18 +292,18 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
     }
   }
   MC2.selCanvasBcal("partP", 7);
-  MC2.selCanvasBcal("workP", 0);
+  MC2.selCanvasBcal("workP", 2);
   MC2.selCanvasBcal("viewP", 5);
   const result = rectProc(); //矩形翼処理
   if(result != null){ //多重呼び出しで描画済みなので描画しない
     if(result){ //矩形翼成立
       crRLI("rect");    //線データ作成
       //drawRLI();  //パーツcanvas描画  
-      if(taperProc()){
+      if(taperProc()){ //テーパー翼処理
         MC2.selCanvasBcal("partP");
         crRLI("taper");    //線データ作成
       }
-      if(sweepProc()){
+      if(sweepProc()){ //後退翼翼処理
         MC2.selCanvasBcal("workP");
         crRLI("sweep");    //線データ作成
       }

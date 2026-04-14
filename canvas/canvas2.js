@@ -238,8 +238,7 @@ function baseInit(bid){ //canvasの初期化
   function setBoxAcl(xy, y, box){
     if(box){
       const canvasB = document.getElementById(box);
-//      canvasB.style.width = canvas.width+"px"
-//      canvasB.style.height = canvas.height+"px"
+      canvasB.style.height = canvas.height+"px"
     }
     setOrg([xy[0]/2, y]);
     if(box){
