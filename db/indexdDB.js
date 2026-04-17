@@ -7,6 +7,11 @@ import { ed } from "./db_manage.js";        //★debug
 import { ixDB_ORG } from "./ixDB_ORG.js";
 
 let dbp = null;
+const dbd = {};   //DB読み出しデータ　dbd.xxx
+//export const apInfo = {};     //DBデータバッファ
+//export const prototype = {};  //DBデータバッファ
+//export const baseList = {};   //DBデータバッファ
+//export const base = {};       //DBデータバッファ
 
 let manege_log = false; //logの表示先切り替えフラグ
 function cMsg_SL(...args){  //実行ログメッdbReadセージ　非表示中継
@@ -56,7 +61,7 @@ function openDB(name = DB_NAME, version = DB_VERSION, stores = null) {
 async function openDB_init(name = DB_NAME, version = DB_VERSION, stores = STORES) {
   const isNew = await openDB(name, version, stores);  //オープン
   if(isNew){   //初期データ書き込み
-    for (const store of stores) {                 // ストアごとにデータ登録
+    for (const store of stores) {   // ストアごとにデータ登録
       const data = ixDB_ORG[store.name];
   cMsg_SL(`${store.name} ストア`);
       if (data === undefined) {
@@ -72,7 +77,7 @@ async function openDB_init(name = DB_NAME, version = DB_VERSION, stores = STORES
     }
   }
   closeDB();  //クローズ
-  await db.dbRead();  //初期データー読み出し
+  await dbRead();  //初期データー読み出し
 }
 
 function closeDB() {	// DBクローズ（必須）
@@ -84,8 +89,6 @@ function closeDB() {	// DBクローズ（必須）
 }
 
 function deleteDB(name = DB_NAME) {	// DB削除（Android安定版）
- // db.debug();
- // ed.debug();
   return new Promise((resolve, reject) => {
     console.log("🧨 delete start");
     closeDB(); // ★最重要
@@ -106,7 +109,24 @@ function deleteDB(name = DB_NAME) {	// DB削除（Android安定版）
     }, 50);
   });
 }
-
+/*
+function deleteDB(name) {  //DB削除処理
+ cMsg_SL(`🔹DB削除: ${name}`);
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.deleteDatabase(name);
+    req.onsuccess = () => {
+ cMsg_SL("DB削除成功");
+      resolve();
+    };
+    req.onerror = () => reject(req.error);
+    req.onblocked = () => {
+ console.warn("⚠️ delete blocked: 他タブでDB使用中");
+      reject(new Error("delete blocked"));
+    };
+  });
+} //deleteDB
+*/
+/*
 function dbRead() {	// DB読み出し
   return new Promise((resolve, reject) => {
 
@@ -132,6 +152,40 @@ function dbRead() {	// DB読み出し
     };
   });
 }
+  */
+async function dbRead(store = "all", key = 0) {  //データベースの読み出し
+  if (IDB.dbp == null) {
+    //IDB.dbp = await openDB(DB_NAME);
+    const ret  = await openDB(DB_NAME);
+    cMsg(ret);
+  }
+
+  if (store === "all") {
+    for (const storeObj of STORES) {
+      //dbData[storeObj.name] = await readOne(storeObj.name, key);
+      IDB.dbd[storeObj.name] = await readOne(storeObj.name, key);
+ //(`${storeObj.name}`, dbData[storeObj.name])
+   }
+  } else {
+    IDB.dbd[store] =  await readOne(store, key);
+  }
+
+  return IDB.dbd;
+}
+async function readOne(sName, key = null) {    //読み出し処理
+  return new Promise((resolve, reject) => {
+    const tx = IDB.dbp.transaction(sName, "readonly");
+    const store = tx.objectStore(sName);
+
+    const req = store.get(key === null ? 0 : key);
+    req.onsuccess = () => {
+      console.log("result:", req.result);
+      resolve(req.result ?? null);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
 
 function putData(storeName, data) {  //DB書き込み
   return new Promise((resolve, reject) => {
@@ -148,20 +202,40 @@ function putData(storeName, data) {  //DB書き込み
       } else {
         store.put(data);
       }
-      tx.oncomplete = () => {
-        resolve(true);
-      };
-      tx.onerror = (e) => {
-        reject(e.target.error);
-      };
-      tx.onabort = (e) => {
-        reject(e.target.error);
-      };
+      tx.oncomplete = () => { resolve(true); };
+      tx.onerror = (e) =>   { reject(e.target.error); };
+      tx.onabort = (e) =>   { reject(e.target.error); };
     } catch (e) {
       reject(e);
     }
   });
 }
+/*
+function putData(storeName, data, ix = 0) {  //ストア　データ書き込
+ cMsg_SL(`🔹putData開始: ${storeName}`);
+  return new Promise((resolve, reject) => {
+    const tx = IDB.dbp.transaction(storeName, "readwrite");
+    const store = tx.objectStore(storeName);
+
+ //    store.clear(); // 古いデータを削除
+
+    if (Array.isArray(data)) {  // 配列の場合は個別追加
+      data.forEach(item => store.add(item));
+    } else {  // オブジェクト単体で追加
+      store.put(data);          // key=0 を明示
+    }
+
+    tx.oncomplete = () => {
+ //cMsg_SL(` ${storeName} add完了`);
+      resolve();
+    };
+    tx.onerror = (e) => {
+ console.warn(`⚠️ txエラー: ${storeName}`, e);
+      reject(tx.error);
+    };
+  });
+}
+*/
 /*
 function putData(storeName, data, ix = 0) {  //ストア　データ書き込
  cMsg_SL(`🔹putData開始: ${storeName}`);
@@ -188,7 +262,6 @@ function putData(storeName, data, ix = 0) {  //ストア　データ書き込
   });
 }
 */
-/*
 function dbWrite(data) {  //DB書き込み
   return new Promise((resolve, reject) => {
 
@@ -220,7 +293,7 @@ function dbWrite(data) {  //DB書き込み
     };
   });
 }
-*/
+
 async function resetDB() {	// DBリセット（再構築）
   console.log("🔁 resetDB start");
 
@@ -250,54 +323,14 @@ async function boot() {	// 起動フロー
   }
 }
 
-
-/**********
-function openDB() {	//① openDB（初回もここで作られる）
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open("MyDB", 1);
-
-    req.onupgradeneeded = (e) => {
-      const dbp = e.target.result;
-
-      if (!dbp.objectStoreNames.contains("main")) {
-        dbp.createObjectStore("main", { keyPath: "id" });
-      }
-    };
-
-    req.onsuccess = (e) => {
-      resolve(e.target.result);
-    };
-
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function boot() {	//② 初回起動判定（ここが本体）
-  const dbp = await openDB();
-
-  const tx = dbp.transaction("main", "readonly");
-  const store = tx.objectStore("main");
-  const req = store.getAll();
-
-  req.onsuccess = () => {
-    if (req.result.length === 0) {
-      console.log("初回起動 → 初期データ作成");
-      initDB(dbp);
-    }
-  };
-}
-
-function initDB(dbp) {	//③ 初期化処理
-  const tx = dbp.transaction("main", "readwrite");
-  const store = tx.objectStore("main");
-
-  store.add({ id: 1, value: "初期データ" });
-}
-  *****************/
  export const IDB ={
-  deleteDB, openDB, openDB_init,
+  deleteDB,
+  openDB, openDB_init,
+  putData, dbRead,
   get dbp(){ return dbp; }, 
   set dbp(val){ dbp = val;}, 
+  dbd
 };
+
 //import { IDB } from "./indexdDB.js";
 //end of file

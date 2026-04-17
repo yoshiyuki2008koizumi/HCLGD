@@ -1,69 +1,11 @@
 export const ixDB_ORG = {
-  common: {
+  apInfo: {
     "id": 0,
+    "verstion": "１",
     "tagetName": "sd",
     "extInfo": ""
   },
-  target: {
-    "id": 0,
-    "exc": "aa",
-    "apList": [
-      
-    ]
-  },
-  dataID: {
-    "id": 0,
-    "dataIDx": {
-      "mw_rect": [
-        "mw_rect_i", "mw_rect_o", "hs_rect_i", "hs_rect_o", "vs_rect_i", "vs_rect_o"
-      ],
-      "mw_rect_XX": [
-        "mw_rect_i", "mw_rect_o", "area_pd", "span_pd", "linePens"
-      ],
-      "mw_rect_A": [
-        "mw_rect_i", "mw_rect_o", "mw_etc", "mw_etc2"
-      ],
-      "mw_rect_S": [
-        "mw_rect_i", "aaa", "", "dddd", "cccc", "bbbb"
-      ],
-      "mw_rect_1": "mw_etc",
-      "mw_rect_2": "mw_etc2",
-      "hs_rect": [
-        "hs_rect_i", "hs_rect_o", "area_pd", "span_pd"
-      ],
-      "base": [
-        "mw_rect_i", "mw_rect_o", "hs_rect_i", "hs_rect_o", "vs_rect_i", "vs_rect_o"
-      ]
-    }
-  },
-  design: {
-    "id": 0,
-    "ret": "design",
-    "new_design": {
-      "dataId": "base",
-      "targetName": "sd",
-      "mw_rect_i": [
-        ["重量 (g)、　翼面荷重(g/dm^2)", 10      , 10      , "面積=翼面荷重/重量", ""              , ""      , "loading_i", "weight_i", ""       , "rect_pd", "0x16"  , 3       , 1       ],
-        ["主翼 参考面積(mm^2)、　％"   , ""      , ""      , 100                 , ""              , ""      , "area_io"  , "ariap_i" , ""       , ""       , "0x14"  , 1       , ""      ],
-        ["アスペクト比(n=翼根：1=翼端)", 5       , 1       , "n=翼根：1=翼端"    , ""              , ""      , "aspect_i" , ""        , ""       , ""       , "0x14"  , 0.2     , ""      ],
-        ["面積(dm^2)"                  , ""      , ""      , ""                  , "面積 優先"     , ""      , ""         , "area_i"  , ""       , "area_pd", "0x15"  , 500     , 1       ],
-        ["半翼幅 (mm)、　翼弦 (mm)"    , ""      , ""      , ""                  , "翼幅/翼弦 優先", ""      , ""         , "span_i"  , "chord_i", "span_pd", "0x17"  , 3       , 1       ]
-      ],
-      "hs_rect_i": [
-        ["水平尾翼 参考面積(mm^2)、　％", ""      , ""      , 25              , ""              , ""      , "area_io" , "ariap_i", ""       , ""       , "0x13"   , 0.3     , ""      ],
-        ["アスペクト比(n=翼根：1=翼端)" , 4       , 1       , "n=翼根：1=翼端", ""              , ""      , "aspect_i", ""       , ""       , ""       , "0x11"   , 0.2     , ""      ],
-        ["面積(dm^2)"                   , ""      , ""      , ""              , "面積 優先"     , ""      , ""        , "area_i" , ""       , ""       , "area_pd", "0x15"  , 100     ],
-        ["翼幅 (mm)、　翼弦 (mm)"       , ""      , ""      , ""              , "翼幅/翼弦 優先", ""      , ""        , "span_i" , "chord_i", "span_pd", "0x17"   , 3       , 1       ]
-      ],
-      "vs_rect_i": [
-        ["垂直尾翼 参考面積(mm^2)、　％", ""      , ""      , 30              , ""              , ""      , "area_io" , "ariap_i", ""       , ""       , "0x11"   , 0.3     , ""      ],
-        ["アスペクト比(n=翼根：1=翼端)" , 3       , 1       , "n=翼根：1=翼端", ""              , ""      , "aspect_i", ""       , ""       , ""       , "0x11"   , 0.2     , ""      ],
-        ["面積(dm^2)"                   , ""      , ""      , ""              , "面積 優先"     , ""      , ""        , "area_i" , ""       , ""       , "area_pd", "0x15"  , 50      ],
-        ["翼幅 (mm)、　翼弦 (mm)"       , ""      , ""      , ""              , "翼幅/翼弦 優先", ""      , ""        , "span_i" , "chord_i", "span_pd", "0x17"   , 3       , 1       ]
-      ]
-    }
-  },
-  newBase: {
+  prototype: {
     "id": 0,
     "base": {
       "order": [
@@ -195,8 +137,15 @@ export const ixDB_ORG = {
       }
     }
   },
-  design2: {
+  base: {
     "id": 0
+  },
+  baseList: {
+    "id": 0,
+    "exc": "aa",
+    "apList": [
+      
+    ]
   }
 }; 
 

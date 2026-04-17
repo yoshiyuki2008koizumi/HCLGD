@@ -1,11 +1,13 @@
 // design.js  基本設計
 import { cp } from "../childePage.js";
 //import { dispTest } from "./dispTest.js";
-import { db, dbData } from "../db/dataBase.js";
+import { db, } from "../db/dataBase.js";
 import { EMSbase } from "./base.js";
 //3/20　import { MC } from "../canvas/canvas.js";
 import { MC2, A5Hp2 } from "../canvas/canvas2.js";
 import { table } from "./table.js";
+import { IDB } from "../db/indexdDB.js";
+const dbdBase = () => IDB.dbd.base;
 
 //import { anDesign } from "../design/acNumDesign_2.js"; //空力計算サンプル
 
@@ -202,10 +204,10 @@ function init(initDom = false) {  //初期起動
 
     setDomEvent("saveBtn","click", saveCurrentTarget);
   }
-  chTitle(`基本設計　機種:　` + dbData.design2.id);
+  chTitle(`基本設計　機種:　` + IDB.dbd.base.id);
   document.getElementById("saveBtn").disabled = true; //保存ボタン非表示
 
-  mode = dbData.design2.mode; //EMSモードクロージャ起動
+  mode = dbdBase().mode; //EMSモードクロージャ起動
   ddDom = ddDomTable[mode];
   const registry = {
     base: EMSbase,

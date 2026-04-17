@@ -1,8 +1,10 @@
 //parts.js
 //import { drawer, LInv } from "../canvas/canvas.js";
-import { dbData } from "../db/dataBase.js";
+//import { dbData } from "../db/dataBase.js";
 import { MC2, LInv, LStart, LEnd, LCol,} from "../canvas/canvas2.js";
 import { aero } from "../design/aero.js";
+import { IDB } from "../db/indexdDB.js";
+const dbdBase = () => IDB.dbd.base;
 
 function init(name){  //partsオブジェクトの初期化
   const obj = {
@@ -25,30 +27,30 @@ function setCanvas(){
   MC2.selCanvasBcal("viewA", 4);
 
 /*
-  aero.hsLH(60, dbData.design2.val.rect.mw, dbData.design2.val.rect.hs);
-  aero.hsLH(70, dbData.design2.val.rect.mw, dbData.design2.val.rect.hs);
-  aero.hsLH(80, dbData.design2.val.rect.mw, dbData.design2.val.rect.hs);
-  aero.hsLH(90, dbData.design2.val.rect.mw, dbData.design2.val.rect.hs);
-  aero.hsLH(100, dbData.design2.val.rect.mw, dbData.design2.val.rect.hs);
+  aero.hsLH(60, dbdBase().val.rect.mw, dbdBase().val.rect.hs);
+  aero.hsLH(70, dbdBase().val.rect.mw, dbdBase().val.rect.hs);
+  aero.hsLH(80, dbdBase().val.rect.mw, dbdBase().val.rect.hs);
+  aero.hsLH(90, dbdBase().val.rect.mw, dbdBase().val.rect.hs);
+  aero.hsLH(100, dbdBase().val.rect.mw, dbdBase().val.rect.hs);
 */
-  if (dbData.design2.val?.rect?.mw !== undefined){
-    MC2.draw(dbData.design2.val.rect.mw);   //主翼
-    if (dbData.design2.val?.rect?.hs !== undefined){ 
+  if (dbdBase().val?.rect?.mw !== undefined){
+    MC2.draw(dbdBase().val.rect.mw);   //主翼
+    if (dbdBase().val?.rect?.hs !== undefined){ 
       MC2.save(); // ← 状態を全部保存（色・太さ・その他全て）
 
-      const {n: oy, s, l} = aero.hsLH(90, dbData.design2.val.rect.mw, dbData.design2.val.rect.hs);
+      const {n: oy, s, l} = aero.hsLH(90, dbdBase().val.rect.mw, dbdBase().val.rect.hs);
      // cMsg (` lH - ${s} ${oy} ${l}`)
       MC2.movOrg([0,oy])   //原点移動
       MC2.ll_Canvas([[2,0,LCol],  [1, 1,    LInv|LStart], [-1,  -1,   LEnd]]);  //X表示
       MC2.ll_Canvas([[2,0,LCol],  [0, s-oy, LInv|LStart], [ 1,  s-oy, LEnd]]);  //-表示
       MC2.ll_Canvas([[2,0,LCol],  [0, l-oy, LInv|LStart], [ 1,  l-oy, LEnd]]);  //-表示
 
-      MC2.draw(dbData.design2.val.rect.hs); //水平尾翼
+      MC2.draw(dbdBase().val.rect.hs); //水平尾翼
       MC2.restore(); // ← 色・太さ・点線設定など全部元に戻る
-      if (dbData.design2.val?.rect?.vs !== undefined){ 
+      if (dbdBase().val?.rect?.vs !== undefined){ 
         MC2.save(); // ← 状態を全部保存（色・太さ・その他全て）
         MC2.movOrg([0,oy])
-        MC2.draw(dbData.design2.val.rect.vs); //主直尾翼
+        MC2.draw(dbdBase().val.rect.vs); //主直尾翼
       }
     }
   }

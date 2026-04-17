@@ -1,7 +1,9 @@
 //table.js
-import { dbData } from "../db/dataBase.js";
+//import { dbData } from "../db/dataBase.js";
 import { dsMode } from "./design.js";
 import { BASE } from "./base.js";
+import { IDB } from "../db/indexdDB.js";
+const dbdBase = () => IDB.dbd.base;
 
 
 function onCellCommit(info, commit = true) { //入力セル確定callback
@@ -91,7 +93,7 @@ const nameTbl = {
   const col = Number(ds.col);
 
   if (ds.col === "0"){  //col==0なら差分値の設定
-    const name = dsMode.data[pat][row+1][add? 1: 2];
+    const name = dbdBase()[pat][row+1][add? 1: 2];
     if(name.endsWith("_i")){ //差分変数
       let defval = dsMode.val[pat][name+"_def"];
       const newDefVal = document.getElementById("dcDefValue").value;
@@ -101,7 +103,7 @@ const nameTbl = {
   }else{
  cMsg(`HCD ${add} ${ds.name}`);
     if (ds.name === "sweep_i"){
-      if(dbData.design2.base[pat][td.dataset.row][3] !== "後退角度")return;
+      if(dbdBase().base[pat][td.dataset.row][3] !== "後退角度指定")return;
     }
     if (ds.name && ds.name.endsWith("_i")) {
       let defVal =  dsMode.val[pat][ds.name+"_def"] * ((add === true) ? 1 : -1);
@@ -117,12 +119,12 @@ const nameTbl = {
       if (ds.name === "taper_i"){
         const info = {
           name: "sweep_i",
-          val: dbData.design2.base[pat][Number(td.dataset.row) + 2][3],
+          val: dbdBase().base[pat][Number(td.dataset.row) + 2][3],
           row: Number(td.dataset.row)+2,
           col: 3,
           pat: pat
         };
-        //BASE.sweep_pd(dbData.design2.base[pat][Number(td.dataset.row) + 2][3]);
+        //BASE.sweep_pd(dbdBase().base[pat][Number(td.dataset.row) + 2][3]);
         BASE.sweep_pd(info);
         //return;
       }
@@ -171,7 +173,7 @@ function setup(ix,base, pat) {  //テーブル初期表示
   }
   const tableDom = document.getElementById("dgnTable" + String(ix));  //DOM
   tableDom.innerHTML = "";  //クリアテーブル
-  const block = dbData.design2[base][pat];        //dbVal.blocks[name];
+  const block = dbdBase()[base][pat];        //dbVal.blocks[name];
   const table = document.createElement("table");  //table作成
   table.className = "cell-block";
   table.dataset.block = pat;
@@ -190,7 +192,7 @@ function setup(ix,base, pat) {  //テーブル初期表示
       const name = row2[j];           //セルの変数名
       if(name !== ""){
         td.dataset.name = name;
-        const val = dbData.design2.val[base][pat][name];
+        const val = dbdBase().val[base][pat][name];
         //td.textContent = val? val: "";  //変数値で初期化
         td.textContent = fNum(val); //val? val: "";  //変数値で初期化
         if(name.includes("_o")){ 

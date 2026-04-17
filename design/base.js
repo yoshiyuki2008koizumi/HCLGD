@@ -1,5 +1,5 @@
 //base.jsd
-import { dbData } from "../db/dataBase.js";
+//import { dbData } from "../db/dataBase.js";
 import { table } from "./table.js";
 //3/20 //import { drawer, LInv } from "../canvas/canvas.js";
 import { parts } from "../parts/parts.js";
@@ -8,6 +8,10 @@ import { design, } from "../design/design.js";
 import { MC2, A5Hp2, A4Vp1, LInv, } from "../canvas/canvas2.js";
 import { dsMode } from "./design.js";
 import { aero } from "../design/aero.js";
+import { IDB } from "../db/indexdDB.js";
+
+//const baseList = () => IDB.dbd.baseList;
+const dbdBase = () => IDB.dbd.base;
 
 let step = "base";
 
@@ -47,7 +51,7 @@ function sweep_pd(info){  //後退角
       const defL = (val[info.pat].rootChord_o - val[info.pat].tipChord_o) * 0.75;
       anglDeg = Math.atan(defL / val[info.pat].span_o) * 180 / Math.PI;
       break;
-    case "後退角度":
+    case "後退角度指定":
       return;
   }
   cMsg (anglDeg)
@@ -210,8 +214,8 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
 
     }else{
       if(pat === "vs"){ //双垂直尾翼ならX座標[0]を移動
-        const span = dbData.design2.val.base.hs.span_o;
-        const chord = dbData.design2.val.base.hs.rootChord_o;
+        const span = dbdBase().val.base.hs.span_o;
+        const chord = dbdBase().val.base.hs.rootChord_o;
         list.forEach(ll => {       //各X座標の移動
           ll[0] += span;
         });
@@ -220,8 +224,8 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
       MC2.ll_mOrg(list,0,-macOffset); //オリジン座標をMACの1/4に移動
     }
 
-    dbData.design2.val[m] ??= {}; //矩形翼線情報の保存
-    dbData.design2.val[m][pat] = list;
+    dbdBase().val[m] ??= {}; //矩形翼線情報の保存
+    dbdBase().val[m][pat] = list;
   //  hsma(70,)
     drawRLI(m);  //パーツcanvas描画  
   }//crRLI
@@ -230,7 +234,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
 
       MC2.save(); // ← 状態を全部保存（色・太さ・その他全て）
         let result = 1;
-        let mw_span = dbData.design2.val.base.mw.span_o * 2;  //canvas縮小係数
+        let mw_span = dbdBase().val.base.mw.span_o * 2;  //canvas縮小係数
     //cMsg(mw_span)
         for(let i = 0; ; i++){  //縮小設定
           if(mw_span <= A5Hp2[0])break;
@@ -240,9 +244,9 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
         MC2.scale(result, result);  // ← 縮小（相対）
 
         if(pat === "vs")    //垂直尾翼なら合わせて水平尾翼を追記 
-          MC2.draw(dbData.design2.val[m].hs,1); //薄い黒
+          MC2.draw(dbdBase().val[m].hs,1); //薄い黒
 
-        MC2.draw(dbData.design2.val[m][pat]);
+        MC2.draw(dbdBase().val[m][pat]);
 ll_mac(mac);  //llにMACを追記
       MC2.restore(); // ← 色・太さ・点線設定など全部元に戻る
     //    debugger
@@ -308,7 +312,7 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
         crRLI("sweep");    //線データ作成
       }
     }else{
-       delete dbData.design2.val.rect[pat];
+       delete dbdBase().val.rect[pat];
     }
     parts.setCanvas();  //全体canvasの表示
   }
@@ -332,8 +336,8 @@ export const BASE = {
 
 export function EMSbase(astep) { //クロージャー情報の通知
   step = astep;
-  val = dbData.design2.val[step];
-  data = dbData.design2[step];
+  val = dbdBase().val[step];
+  data = dbdBase()[step];
   return{ //baseのesModeを返す
     init,
     val,

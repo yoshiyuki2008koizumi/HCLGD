@@ -1,7 +1,7 @@
 // entrance.js  起動処理　(機体選択or前回機能継続指定)
 import { cp } from "./childePage.js";
 import { ed } from "./db/db_manage.js";
-import { db, dbData } from "./db/dataBase.js";
+import { db, } from "./db/dataBase.js";
 
 // #region ボタン処理
 function contBtn() {  //前回起動情報取得

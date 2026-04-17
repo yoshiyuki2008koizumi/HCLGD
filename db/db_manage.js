@@ -1,5 +1,5 @@
 import { DB_NAME, DB_VERSION, STORES} from "./schema.js";
-import { db, dbData } from "./dataBase.js";
+import { db, } from "./dataBase.js";
 import { cp } from "../childePage.js";
 
 import { IDB } from "./indexdDB.js";
@@ -242,7 +242,5 @@ const api = {
 };
 cp.childeMap.db_m = api; //登録
 
-function debug(){}
-
-export const ed = { init, showStatus, clearShowStatus, debug };
+export const ed = { init, showStatus, clearShowStatus };
 //import { ed } from "./db_manage.js";

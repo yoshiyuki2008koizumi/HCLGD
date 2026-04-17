@@ -1,5 +1,5 @@
 // start.js
-import { db, dbData } from "./db/dataBase.js";
+import { db, } from "./db/dataBase.js";
 import { cp } from "./childePage.js";
 import { parts } from "./parts/parts.js";
 //import { anDesign } from "./design/acNumDesign_2.js"; //空力計算サンプル
@@ -82,10 +82,9 @@ async function init(initDom = false) {
 
 async function db_dbRead(){
   if(10){
- //   debugger
-  //await IDB.openDB_init(DB_NAME, DB_VERSION, STORES);
-  await IDB.openDB_init();//DB_NAME, DB_VERSION, STORES);
-  dbData.target.exc = "aaa";   // debug★★
+ // debugger
+    await IDB.openDB_init();//DB_NAME, DB_VERSION, STORES);
+ // dbData.target.exc = "aaa";   // debug★★
   }
 }
 
