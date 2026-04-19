@@ -74,11 +74,9 @@ async function chgcaBtn(add){  //名前(id)の変更/追加
 }
 async function saveCurrentTarget() { //編集データの保存　ボタン処理
  cMsg('saveCurrentTarget');
-  saveBtn.disabled = true;
-  saveBtn.textContent = "保存中";
-    await db.saveAp();  //データ書き込
-  saveBtn.disabled = false;
-  saveBtn.textContent = "保存";
+  saveBtn.disabled = true;  saveBtn.textContent = "保存中";
+  await db.saveAp();  //データ書き込
+  saveBtn.disabled = false; saveBtn.textContent = "保存";
 }
 function chgNameBtn(add){  //名前の変更開始
   const domTx = `
@@ -155,7 +153,8 @@ const chtml = `
 <div id="dgnTable"></div>  <!-- 設計テーブル表示 -->
 
 <hr>
-　<button id="tblDelBtn">Delet</button>
+　<button id="saveBtn" disabled>保存</button>
+　　<button id="tblDelBtn">Delet</button>
 <button id="tblLeftBtn">Left(+)</button>
 <button id="tblRigthBtn">Rigth(-)</button>
 <div class="rowContainer">
@@ -172,11 +171,7 @@ const chtml = `
     <canvas id="workP"></canvas>
   </div>
 </div>
-
 <hr> 
-
-<!-- 保存ボタンは HTML Table の下に置く -->
-<button id="saveBtn" disabled>保存</button>
 
 
 <div id="canvasBoxA" class="canvasBox">

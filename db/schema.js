@@ -1,6 +1,6 @@
-// DB名・バージョン
+// schema.js　DB管理情報
 export const DB_NAME = "HCLGD";
-export const DB_VERSION = 1;
+export const DB_VERSION = 3;
 
 // ストア定義
 export const STORES = [
@@ -9,5 +9,17 @@ export const STORES = [
   { name: "baseList", single: true  },
   { name: "base", keyPath: "id", autoIncrement: true   },
 ];
+
+/*
+ export const IDB ={
+  deleteDB,
+  openDB, openDB_init,
+  putData, dbRead,
+  get dbp(){ return dbp; }, 
+  set dbp(val){ dbp = val;}, 
+  dbd
+};
+*/
+//import { IDB } from "./indexdDB.js";
 
 //end of file

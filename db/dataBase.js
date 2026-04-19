@@ -1,5 +1,4 @@
 // dataBase.js
-//import { ixDB_ORG } from "./ixDB_ORG.js";
 import { ixDB_UPDATE } from "./ixDB_UPDATE.js";
 import { DB_NAME, DB_VERSION, STORES} from "./schema.js";
 import { cp } from "../childePage.js";
@@ -158,7 +157,7 @@ async function delAp(name=null){   //機体削除
   if(name === null)name = dbdBase().id;
   baseList().apList = baseList().apList.filter(item => item[0] !== name); //name要素を削除
   await IDB.putData("baseList", baseList());  //targetデータ書き込
-  await IDB.deleteDB("base", name);
+  await IDB.deleteID("base", name);
 } //delAp
 async function addAp(name, abase = null){ //機体データ追加
   cMsg(`${name} ${abase}`);
@@ -182,7 +181,7 @@ async function addAp(name, abase = null){ //機体データ追加
   await IDB.putData("baseList", baseList());  //データ書き込  cp.init(apList);
 } //addAp
 async function saveAp(){//機体データ保存
-  await IDB.putData("design2", dbdBase());  //データ書き込
+  await IDB.putData("base", dbdBase());  //データ書き込
 } //saveAp
 async function chgAp(name){//機体データid変更（削除して追加）
   await delAp();  //ターゲット削除

@@ -2,6 +2,7 @@
 import { cp } from "./childePage.js";
 import { ed } from "./db/db_manage.js";
 import { db, } from "./db/dataBase.js";
+import { IDB } from "./db/indexdDB.js";
 
 // #region ボタン処理
 function contBtn() {  //前回起動情報取得
@@ -28,7 +29,7 @@ function tcanvasBtn() {  //indexedDB
 }
 function designBtn(){       //設計
 //  db.req({req: "design", apName:  dbData.design2.id});
-  db.req({req: "design", apName: dbData.target.exc});
+  db.req({req: "design", apName: IDB.dbd.baseList.exc});
 }
 window.designBtn = designBtn;
 // #endregion

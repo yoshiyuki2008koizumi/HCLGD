@@ -1,7 +1,7 @@
 export const ixDB_ORG = {
   apInfo: {
     "id": 0,
-    "verstion": "１",
+    "ver": "１",
     "tagetName": "sd",
     "extInfo": ""
   },

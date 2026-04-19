@@ -9,9 +9,10 @@ import { MC2, A5Hp2, A4Vp1, LInv, } from "../canvas/canvas2.js";
 import { dsMode } from "./design.js";
 import { aero } from "../design/aero.js";
 import { IDB } from "../db/indexdDB.js";
-
-//const baseList = () => IDB.dbd.baseList;
 const dbdBase = () => IDB.dbd.base;
+
+const cvmsg = {}; //カンヴァス表示メッセージ
+const patname = {mw: "主翼", hs: "水平尾翼", vs: "垂直尾翼"}
 
 let step = "base";
 
@@ -260,16 +261,21 @@ ll_mac(mac);  //llにMACを追記
       patVal.tipDiff_o = 0;
     }else{
       table.setColor(pat,"taper_i",cEnble);
-      tipChord = Number(patVal.rootChord_o)*2 / (taper + 1);
-      rootChord = tipChord * taper;
+      rootChord = Number(patVal.rootChord_o)*2 / (taper + 1);
+      tipChord = tipChord * taper;
       patVal.tipChord_o = tipChord;
       patVal.rootChord_o = rootChord;
       tipDiff = rootChord*0.25 - tipChord*0.25;
       patVal.tipDiff_o = tipDiff;
+
     }
-      return true;
+    return true;
   }
-  function sweepProc(){ //後退角翼処理
+  function getVal(val,s=null){
+    if(s) return val,toFixed(s)
+    return Math.round(val) 
+  }
+  function sweepProc(full){ //後退角翼処理
     sweep = Number(patVal.sweep_i);   //後退角
     if(!sweep){
       patVal.sweepDiff_o = 0;
@@ -286,7 +292,20 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
 cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDiff_o}`)
       //table.setVal(pat,"area_o",aria);
     }
-      return true;
+    cvmsg[pat] = [];
+    let v1,v2;
+    cvmsg[pat].push(patname[pat]);
+    cvmsg[pat].push(`　面積:　${patVal.area_o}`);
+    if(full){
+      v1 = getVal(patVal.span_o*2)
+      cvmsg[pat].push(`　幅:　${v1}`);
+      v1 = getVal(patVal.rootChord_o)
+      v2 = getVal(patVal.tipChord_o)
+      cvmsg[pat].push(`　根弦:　${v1}　端弦:　${v2}`);
+      cvmsg[pat].push(`　MAC:　XX 　重心:　xx`);
+    }
+    MC2.sl_canvas(cvmsg[pat]);
+    return true;
   }
 
   //valProc main
@@ -298,16 +317,16 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
   MC2.selCanvasBcal("partP", 7);
   MC2.selCanvasBcal("workP", 2);
   MC2.selCanvasBcal("viewP", 5);
-  const result = rectProc(); //矩形翼処理
-  if(result != null){ //多重呼び出しで描画済みなので描画しない
-    if(result){ //矩形翼成立
+  const full = rectProc(); //矩形翼処理
+  if(full != null){ //多重呼び出しで描画済みなので描画しない
+    if(full){ //矩形翼成立
       crRLI("rect");    //線データ作成
       //drawRLI();  //パーツcanvas描画  
       if(taperProc()){ //テーパー翼処理
         MC2.selCanvasBcal("partP");
         crRLI("taper");    //線データ作成
       }
-      if(sweepProc()){ //後退翼翼処理
+      if(sweepProc(full)){ //後退翼翼処理
         MC2.selCanvasBcal("workP");
         crRLI("sweep");    //線データ作成
       }

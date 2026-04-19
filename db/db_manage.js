@@ -1,5 +1,5 @@
 import { DB_NAME, DB_VERSION, STORES} from "./schema.js";
-import { db, } from "./dataBase.js";
+//import { db, } from "./dataBase.js";
 import { cp } from "../childePage.js";
 
 import { IDB } from "./indexdDB.js";
