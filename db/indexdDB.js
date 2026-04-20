@@ -105,6 +105,139 @@ async function openDB_init(name = DB_NAME, version = DB_VERSION, stores = STORES
   await dbRead();  //初期データー読み出し
 }
 
+/* 4/20 ダメ版
+function openDB(name = DB_NAME, version = DB_VERSION, stores = null) {
+  return new Promise((resolve, reject) => {
+    let versionInfo = null;   // ★ version情報保持
+    const req = indexedDB.open(name, version);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      versionInfo = { // ★ バージョン情報を取得
+        oldVer: e.oldVersion,
+        newVer: e.newVersion
+      };
+      cMsg_SL(`🔧 upgrade needed ${e.oldVersion} → ${e.newVersion}`);
+      for (const store of stores) {
+        if (!db.objectStoreNames.contains(store.name)) {
+          db.createObjectStore(store.name, { keyPath: "id" });
+          cMsg_SL(` ${store.name} STORE作成`);
+        }
+      }
+    };
+    req.onsuccess = (e) => {
+      const db = e.target.result;
+      dbp = db;
+      console.log("✅ DB open success");
+      db.onversionchange = () => {
+        console.warn("⚠️ version change → close DB");
+        db.close();
+        dbp = null;
+      };
+      // ★ 初期化判定（確実）
+      let isNew = false;
+      for (const store of stores) {
+        if (!db.objectStoreNames.contains(store.name)) {
+          isNew = true;
+          break;
+        }
+      }
+      resolve({
+        isNew: isNew,
+        versionInfo: versionInfo   // ★ ここで返す
+      });
+    };
+    req.onerror = (e) => {
+      console.error("DB error", e.target.error);
+      reject(e.target.error);
+    };
+    req.onblocked = () => {
+      console.warn("🚫 DB open blocked");
+    };
+  });
+}
+  */
+/* 3?回目の修正
+function openDB(name = DB_NAME, version = DB_VERSION, stores = null) {
+
+  return new Promise((resolve, reject) => {
+
+    const req = indexedDB.open(name, version);
+
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+
+      let msg;
+      if (e.oldVersion === 0) {
+        msg = "初回起動データベースを作成します。";
+      } else {
+        msg = `DB更新 ${e.oldVersion} → ${e.newVersion}`;
+      }
+
+      alert(msg);
+
+      for (const store of stores) {
+        if (!db.objectStoreNames.contains(store.name)) {
+
+          const os = db.createObjectStore(store.name, { keyPath: "id" });
+
+          // ★ここで初期データを書く
+          const data = ixDB_ORG[store.name];
+          if (data) {
+            for (const row of data) {
+              os.add(row);
+            }
+          }
+
+          cMsg_SL(` ${store.name} STORE作成＋初期データ`);
+        }
+      }
+    };
+
+    req.onsuccess = (e) => {
+      dbp = e.target.result;
+      resolve();
+    };
+
+    req.onerror = (e) => {
+      reject(e.target.error);
+    };
+
+  });
+}
+*/
+/*
+async function openDB_init(name = DB_NAME, version = DB_VERSION, stores = STORES) {
+  const result = await openDB(name, version, stores);
+  const isNew = result.isNew;
+  const v = result.versionInfo;
+  if (isNew) {
+    alert("初回起動データベースを作成します。");
+  }
+  // ★ バージョン変更時メッセージ
+  if (v && v.oldVer !== 0) {
+    alert(`データベースをバージョン ${v.oldVer} から ${v.newVer} に更新しました。`);
+  }
+  if (isNew) {
+    for (const store of stores) {
+      const data = ixDB_ORG[store.name];
+      cMsg_SL(`${store.name} ストア`);
+      if (data === undefined) {
+        console.warn(`⚠️ データなし: ${store.name}`);
+        continue;
+      }
+      try {
+        await putData(store.name, data);
+        cMsg_SL(` ${store.name} データ登録完了`);
+      } catch (e) {
+        console.error(`❌ データ登録失敗: ${store.name}`, e);
+      }
+    }
+  }
+  closeDB();
+  await dbRead();
+}
+*/
+
 function closeDB() {	// DBクローズ（必須）
   if (dbp) {
     console.log("🔒 DB close");
