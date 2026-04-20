@@ -28,7 +28,7 @@ function rect_pd(){ //矩形翼設定
   const clrName = [
     "area_io",
     "area_i",
-    "span_i", "chord_i",
+    "hspan_i", "chord_i",
     "taper_i",
     "sweep_i",
   ];
@@ -60,7 +60,7 @@ function sweep_pd(info){  //後退角
 }
 const pdNemu = {  //プルダウン名テーブル　プルダウン表示とクリア変数リスト
   area_pd: {opt: ["面積 優先", "無効化"], cvName: ["area_i"]},
-  span_pd: {opt: ["半翼幅/翼弦 優先", "無効化"], cvName: ["span_i", "chord_i"]},
+  span_pd: {opt: ["半翼幅/翼弦 優先", "無効化"], cvName: ["hspan_i", "chord_i"]},
   rect_pd: {opt: ["矩形翼", "矩形翼優先"], func: rect_pd},
   sweep_pd: {opt: ["後退角(0度)","後退角度指定","前縁直線","後縁直線"],func: sweep_pd},
 };
@@ -120,11 +120,11 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
   function rectProc(){  //矩形翼処理
  //cMsg(`rectProc`)
     let rectFix = false;  //翼成立フラグ
-    span = Number(patVal.span_i);   //翼幅
+    span = Number(patVal.hspan_i)*2;   //翼幅
     chord = Number(patVal.chord_i); //翼弦
     patVal.tipDiff = tipDiff = 0;
-    if((aria = span*chord*2)){  //翼幅、翼弦指定
-      table.setColor(pat,"span_i",cEnble);
+    if((aria = span*chord)){  //翼幅、翼弦指定
+      table.setColor(pat,"hspan_i",cEnble);
       color("chord_i")
       table.setColor(pat,"chord_i",cEnble);
       rectFix = true;
@@ -142,23 +142,23 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
     }
     if(aria && !rectFix){  //面積有効で確定ではない
       if(span + chord){ //幅弦どちらか有効
-        if(span){
+        if(Number(patVal.hspan_i)){
           chord = aria / span;
-          table.setColor(pat,"span_i",cEnble);
+          table.setColor(pat,"hspan_i",cEnble);
         }
-        if(chord){
+        if(Number(patVal.chord_i)){
           span = aria / chord;
           table.setColor(pat,"chord_i",cEnble);
         }
         rectFix = true;
       }else if((aspect = Number(patVal.aspect_i))){
         chord = Math.sqrt(aria / aspect);
-        span = aria / (chord) / 2;
+        span = aria / (chord);
         table.setColor(pat,"aspect_i",cEnble);
         rectFix = true;
       }
     }
-    if(rectFix)aspect = span*2 / chord;
+    if(rectFix)aspect = span / chord;
 
     if(aria != 0)table.setVal(pat,"area_o",aria); //面積確定
     if(span != 0)table.setVal(pat,"span_o",span); //翼幅確定
@@ -204,8 +204,8 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
     const part = parts.init("rect_" + pat); 
     let list = part.ll;
     MC2.ll_start(list,0,0,LInv);
-    MC2.ll_start(list,span,tipDiff,LInv);   // +tipDef
-    MC2.ll_start(list,span,tipChord+tipDiff,LInv);   //tipChord
+    MC2.ll_start(list,span/2,tipDiff,LInv);   // +tipDef
+    MC2.ll_start(list,span/2,tipChord+tipDiff,LInv);   //tipChord
     MC2.ll_end(list,0,rootChord);   // tipChord+tipDef
     mac = aero.calcMAC(list); //MAC算出
 
@@ -235,7 +235,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
 
       MC2.save(); // ← 状態を全部保存（色・太さ・その他全て）
         let result = 1;
-        let mw_span = dbdBase().val.base.mw.span_o * 2;  //canvas縮小係数
+        let mw_span = dbdBase().val.base.mw.span_o;  //canvas縮小係数
     //cMsg(mw_span)
         for(let i = 0; ; i++){  //縮小設定
           if(mw_span <= A5Hp2[0])break;
@@ -297,8 +297,9 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
     cvmsg[pat].push(patname[pat]);
     cvmsg[pat].push(`　面積:　${patVal.area_o}`);
     if(full){
-      v1 = getVal(patVal.span_o*2)
-      cvmsg[pat].push(`　幅:　${v1}`);
+      v2 = getVal(patVal.span_o)
+      v1 = v2/2;
+      cvmsg[pat].push(`　幅:　${v1}(${v2})`);
       v1 = getVal(patVal.rootChord_o)
       v2 = getVal(patVal.tipChord_o)
       cvmsg[pat].push(`　根弦:　${v1}　端弦:　${v2}`);
