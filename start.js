@@ -80,6 +80,12 @@ async function init(initDom = false) {
 */
 }
 
+function docOpen(){
+  window.open("DOC/index.html?v1", "_blank", "noopener");
+}
+
+
+
 async function db_dbRead(){
   if(10){
  // debugger
@@ -96,6 +102,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   setDomEvent("reloadBtn","click", () => {  //再起動ボタン
     location.reload(true);
   });
+  setDomEvent("docBtn","click", docOpen);
+
   chTitle(`start`,upDbg); //ディバッグボタン設定
 
   const iframe = document.getElementById("oldApp");     //旧アプリ表示

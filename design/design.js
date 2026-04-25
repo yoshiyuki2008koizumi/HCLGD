@@ -123,14 +123,6 @@ const chtml = `
       <option value="mReinfo">中補強</option>
     </select>
   </label>
-  <label>
-    <select id="baseSel" class="midSelecｖ">
-      <option value="all">全て</option>
-      <option value="rectangle">矩形</option>
-      <option value="tapered">先細</option>
-      <option value="swept">後退角</option>
-    </select>
-  </label>
   <button id="dsignSelectBtn">選択</button>
 
  　表示
@@ -217,12 +209,25 @@ function init(initDom = false) {  //初期起動
 
 }
 
+function checkSTD(){  //STDの確認
+  if(selectedTd){
+    if((selectedTd.dataset.col == 0) || selectedTd.dataset.name.endsWith("_i") ){ //入力セル
+      return true
+    }
+  }
+  return false
+}
+
 function clickTblDel(e){
   if(selectedTd){
-    if(selectedTd.dataset.name.endsWith("_i")){ //入力セル
-      selectedTd.textContent = "";
-      selectedTd.classList.add("active");
-      e.stopPropagation();
+    if(Number(selectedTd.dataset.col) != 0){
+      if(selectedTd.dataset.name){
+        if(selectedTd.dataset.name.endsWith("_i")){ //入力セル
+          selectedTd.textContent = "";
+          selectedTd.classList.add("active");
+          e.stopPropagation();
+        }
+      }
     }
   }
 }

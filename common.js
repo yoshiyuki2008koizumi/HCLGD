@@ -30,4 +30,9 @@ export function fNum(n) {  //表示桁数変換
   return Math.round(n).toString(); // 小数なし
 }
 
+export function dspVal(val,s=null){  //少数桁変換
+  if(s) return val,toFixed(s) //小数点
+  return Math.round(val);     //整数四捨五入 
+}
+
 //end of file

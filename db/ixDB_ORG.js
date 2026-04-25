@@ -12,10 +12,10 @@ export const ixDB_ORG = {
         "mw", "hs", "vs"
       ],
       "mw": [
+        ["主翼 参考面積(mm^2)、　％"   , ""        , ""         , ""              ],
+        [""                            , "area_io" , "ariap_i"  , "aria_str"      ],
         ["重量 (g)、　翼面荷重(g/dm^2)", ""        , ""         , "矩形翼"        ],
         [""                            , "weight_i", "loading_i", "rect_pd"       ],
-        ["主翼 参考面積(mm^2)、　％"   , ""        , ""         , ""              ],
-        [""                            , "area_io" , "ariap_i"  , ""              ],
         ["アスペクト比(n=翼根：1=翼端)", ""        , ""         , "n=翼根：1=翼端"],
         [""                            , "aspect_i", ""         , ""              ],
         ["面積(dm^2)"                  , ""        , ""         , "面積 優先"     ],
@@ -24,12 +24,12 @@ export const ixDB_ORG = {
         [""                            , "hspan_i" , "chord_i"  , "span_pd"       ],
         ["テーパー比"                  , ""        , ""         , ""              ],
         [""                            , "taper_i" , ""         , ""              ],
-        ["後退角"                      , ""        , ""         , "後退角(0度)"   ],
+        ["後退角"                      , ""        , ""         , "後退角度指定"  ],
         [""                            , "sweep_i" , ""         , "sweep_pd"      ]
       ],
       "hs": [
         ["水平尾翼 参考面積(mm^2)、　％", ""        , ""       , 100             ],
-        [""                             , "area_io" , "ariap_i", ""              ],
+        [""                             , "area_io" , "ariap_i", "aria_str"      ],
         ["アスペクト比(n=翼根：1=翼端)" , ""        , ""       , "n=翼根：1=翼端"],
         [""                             , "aspect_i", ""       , ""              ],
         ["面積(dm^2)"                   , ""        , ""       , "面積 優先"     ],
@@ -38,12 +38,12 @@ export const ixDB_ORG = {
         [""                             , "hspan_i" , "chord_i", "span_pd"       ],
         ["テーパー比"                   , ""        , ""       , ""              ],
         [""                             , "taper_i" , ""       , ""              ],
-        ["後退角"                       , ""        , ""       , "後退角(0度)"   ],
+        ["後退角"                       , ""        , ""       , "後退角度指定"  ],
         [""                             , "sweep_i" , ""       , "sweep_pd"      ]
       ],
       "vs": [
         ["垂直尾翼 参考面積(mm^2)、　％", ""        , ""       , 100             ],
-        [""                             , "area_io" , "ariap_i", ""              ],
+        [""                             , "area_io" , "ariap_i", "aria_str"      ],
         ["アスペクト比(n=翼根：1=翼端)" , ""        , ""       , "n=翼根：1=翼端"],
         [""                             , "aspect_i", ""       , ""              ],
         ["面積(dm^2)"                   , ""        , ""       , "面積 優先"     ],
@@ -52,7 +52,7 @@ export const ixDB_ORG = {
         [""                             , "hspan_i" , "chord_i", "span_pd"       ],
         ["テーパー比"                   , ""        , ""       , ""              ],
         [""                             , "taper_i" , ""       , ""              ],
-        ["後退角"                       , ""        , ""       , "後退角(0度)"   ],
+        ["後退角"                       , ""        , ""       , "後退角度指定"  ],
         [""                             , "sweep_i" , ""       , "sweep_pd"      ]
       ]
     },
@@ -75,7 +75,7 @@ export const ixDB_ORG = {
           "hspan_i_def": 10,
           "chord_i_def": 10,
           "taper_i": "",
-          "taper_i_def": 0.2,
+          "taper_i_def": 0.1,
           "sweep_i": "",
           "sweep_i_def": 2,
           "area_o": "",
@@ -84,7 +84,8 @@ export const ixDB_ORG = {
           "rootChord_o": "",
           "tipCord_o": "",
           "tipDiff_o": "",
-          "sweepDiff_o": ""
+          "sweepDiff_o": "",
+          "aria_str": ""
         },
         "hs": {
           "area_io": "",
@@ -99,7 +100,7 @@ export const ixDB_ORG = {
           "hspan_i_def": 0.1,
           "chord_i_def": 0.1,
           "taper_i": "",
-          "taper_i_def": 0.2,
+          "taper_i_def": 0.1,
           "sweep_i": "",
           "sweep_i_def": 2,
           "area_o": "",
@@ -108,7 +109,8 @@ export const ixDB_ORG = {
           "rootChord_o": "",
           "tipCord_o": "",
           "tipDiff_o": "",
-          "sweepDiff_o": ""
+          "sweepDiff_o": "",
+          "aria_str": ""
         },
         "vs": {
           "area_io": "",
@@ -123,7 +125,7 @@ export const ixDB_ORG = {
           "hspan_i_def": 0.1,
           "chord_i_def": 0.1,
           "taper_i": "",
-          "taper_i_def": 0.2,
+          "taper_i_def": 0.1,
           "sweep_i": "",
           "sweep_i_def": 2,
           "area_o": "",
@@ -132,7 +134,8 @@ export const ixDB_ORG = {
           "rootChord_o": "",
           "tipCord_o": "",
           "tipDiff_o": "",
-          "sweepDiff_o": ""
+          "sweepDiff_o": "",
+          "aria_str": ""
         }
       }
     }

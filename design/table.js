@@ -12,24 +12,33 @@ function onCellCommit(info, commit = true) { //入力セル確定callback
   document.getElementById("saveBtn").disabled = false;        //保存ボタン表示
 
   if(info.name.endsWith("_i") & commit === true){
-    dsMode.valProc(info.pat);  //tableデータを修正されたので再計算
+    dsMode.valProc(info.pat);  //入力データを修正、再計算
+    if(info.name == "taper_i"){   //テーパなら後退角も修正要
+      const td = getTd(info.pat, "sweep_pd");
+      BASE.sweep_pd({val: td.querySelector("select").value, pat: info.pat})
+    }else if(info.name == "ariap_i"){
+      table.setVal (info.pat, "area_io", dsMode.val[info.pat].area_o * info.val / 100); //参考面積も更新
+    }
   }
 }
+
 function enableInputCells(td, callback) {     //入力セルcallback
  //console.log("enableInputCells fired", performance.now());
   td.contentEditable = true;  // 編集可
   td.style.backgroundColor = "#fff";
   td.dataset.prev = td.textContent; // 元の値を保持
 
-  td.addEventListener("beforeinput", e => {         // キー入力制限（IME中も一部チェック）
-    if (e.inputType === "insertText") {
-      const char = e.data;
+  td.addEventListener("beforeinput", e => { // キー入力時処理前の呼び出し
+    if(td.dataset.name.endsWith("_str"))return; //文字列セルは制限なし
+    if (e.inputType === "insertText") {      //テキスト挿入のときだけ処理（削除・貼り付けなどは除外）
+      const char = e.data;                   //挿入される文字
       if (!char.match(/[0-9.\-]/)) {
-        e.preventDefault(); // 数字・小数点・マイナス以外は挿入不可
+        e.preventDefault();                  //入力文字キャンセル
       }
     }
   });
   td.addEventListener("compositionend", e => {      // IME確定後の文字チェック
+    if(td.dataset.name.endsWith("_str"))return; //文字列セルは制限なし
     let value = td.textContent.trim();
     if (!/^[-]?\d*\.?\d*$/.test(value)) {
       td.textContent = td.dataset.prev; // 元の値に戻す
@@ -41,16 +50,18 @@ function enableInputCells(td, callback) {     //入力セルcallback
       td.blur(); // blur に集約
     }
   });
-  td.addEventListener("blur", () => {                 //Enter,フォーカス外れ。関数登録
+  td.addEventListener("blur", () => { //Enter,フォーカス外れ。関数登録
     let value = td.textContent.trim();
-    if (!/^[-]?\d*\.?\d*$/.test(value)) {
-      value = td.dataset.prev; // 元の値に戻す
+    if(td.dataset.name.endsWith("_i")){ 
+      if (!/^[-]?\d*\.?\d*$/.test(value)) {   //数値以外が混じっていたら
+        value = td.dataset.prev; // 元の値に戻す
+      }
     }
     td.textContent = value;
     td.dataset.prev = value; // 新しい確定値を保存
     callback({
       name: td.dataset.name,
-      val: Number(value),//value,
+      val: value,//value,
       pat: td.closest("table").dataset.block,
     });
   });
@@ -194,11 +205,16 @@ function setup(ix,base, pat) {  //テーブル初期表示
         td.dataset.name = name;
         const val = dbdBase().val[base][pat][name];
         //td.textContent = val? val: "";  //変数値で初期化
-        td.textContent = fNum(val); //val? val: "";  //変数値で初期化
+        //td.textContent = fNum(val); //val? val: "";  //変数値で初期化
+        td.textContent = val? val: "";  //変数値で初期化
         if(name.includes("_o")){ 
           td.style.backgroundColor = "#e0f7fa"; //出力セル
-        }else if(name.endsWith("_i")){ 
+        }else if(name.endsWith("_i") || name.endsWith("_str")){ 
           enableInputCells(td, onCellCommit); //キー入力callback登録
+          if(name.endsWith("_str")){ 
+            //td.dataset.type = "text";
+            td.style.textAlign = "left";   // ← これ追加
+          }     
         }else if(name.endsWith("_pd")){ 
           dsMode.setup_pd(pat,td,name,onCellCommit_pd);  //プロダウンの設定
         }
@@ -213,10 +229,7 @@ function setup(ix,base, pat) {  //テーブル初期表示
     tableDom.appendChild(table);
   }
   addTd("sweep_i","adDs","enM");  //td　dataset追加
-//  enableInputCells(onCellCommit); //キー入力設定
   tableDom.addEventListener("dblclick", e => { //左ダブルクリック
-//    e.preventDefault();        // ★ 追加これもいらないはず
-//    e.stopPropagation();       // ★ 追加
 
     if (e.button !== 0) return;
     const td = e.target.closest("td");
