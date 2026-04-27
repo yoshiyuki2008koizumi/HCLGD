@@ -9,7 +9,7 @@ import { BASE } from "../design/base.js";
 const dbdBase = () => IDB.dbd.base;
 
 let val = {};   //変数
-
+/*
 function valProc(pat = null){  //基本設計数値処理(入力値変更)　起動時とtabe入力から呼び出す
   const cEnble = "#9df79dff";
   const color = (name) =>  table.setColor(pat, name, cEnble); //入力有効色設定
@@ -239,6 +239,7 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
     setCanvas();  //全体canvasの表示
   }
 }//valProc
+*/
 
 function init(name){  //partsオブジェクトの初期化
   const obj = {
@@ -318,7 +319,7 @@ function testCanvas(){
 }
 export const parts = {
   init, dbgBtn,
-  valProc,
+//valProc,
   setCanvas, 
 }
 //import { parts } from "./parts/parts.js";

@@ -265,6 +265,10 @@ function baseInit(bid){ //canvasの初期化
       ]
       ll_Canvas(ll);
     }
+    if(xy[1] == 297) {
+      scale(1/2);             //縮小 denug
+    }
+// ctx.lineWidth = 12; //icon
   }
   selCanvas("baseP", "A5Hp2"); setBoxAcl(A5Hp2, A5Hp2[1]*0.4,"canvasBoxP")
   selCanvas("viewP", "A5Hp2"); setBoxAcl(A5Hp2, A5Hp2[1]*0.4); 
@@ -272,9 +276,9 @@ function baseInit(bid){ //canvasの初期化
   selCanvas("workP", "A5Hp2"); setBoxAcl(A5Hp2, A5Hp2[1]*0.4);
 
   selCanvas("baseA", "A4V"); setBoxAcl(A4Vp1,  A4Vp1[1]/4,"canvasBoxA")
-  selCanvas("viewA", "A4V"); setBoxAcl( A4Vp1,  A4Vp1[1]/4)
-  selCanvas("partA", "A4V"); setBoxAcl( A4Vp1,  A4Vp1[1]/4)
-  selCanvas("workA", "A4V"); setBoxAcl( A4Vp1,  A4Vp1[1]/4)
+  selCanvas("viewA", "A4V"); setBoxAcl(A4Vp1,  A4Vp1[1]/4)
+  selCanvas("partA", "A4V"); setBoxAcl(A4Vp1,  A4Vp1[1]/4)
+  selCanvas("workA", "A4V"); setBoxAcl(A4Vp1,  A4Vp1[1]/4)
 }
 
 export const MC2 = {

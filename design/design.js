@@ -16,24 +16,22 @@ export let dsMode = {}; //設計モード呼び出し
 export let mName = "";  //table名
 
 let selectedTd = null;  //最後に選択したテーブル
-function clickHandl(e){ //クリックイベント
-  const td = e.target.closest("td");
+function clickHandl(e){ //画面全体のクリックを拾うイベント
+  const td = e.target.closest("td");  //クリックされた要素から最も近いtdを取得
 
   if (selectedTd) {
-    selectedTd.classList.remove("active");
-    if(selectedTd.dataset.name){ //入力セル
-      if(selectedTd.dataset.name.endsWith("_i")){ //入力セル
-        table.onCellCommit({
-          name: selectedTd.dataset.name,
-          val: selectedTd.textContent, //value,
-          pat: selectedTd.closest("table").dataset.block,
-        });
-      }
+    selectedTd.classList.remove("active");  // 前回選択されたtdのハイライトを解除
+    if(selectedTd.dataset.name?.endsWith("_i")){ //入力セルだったら確定処理
+      table.onCellCommit({
+        name: selectedTd.dataset.name,
+        val: selectedTd.textContent, //value,
+        pat: selectedTd.closest("table").dataset.block,
+      });
     }
   }
   selectedTd = td;
-  if (selectedTd) 
-    selectedTd.classList.add("active");
+  if (selectedTd)   //tdがクリックされた場合
+    selectedTd.classList.add("active"); // 選択されたtdをハイライト
 }
 
 const ddDomTable = {
@@ -180,7 +178,7 @@ function init(initDom = false) {  //初期起動
     setDomEvent("addNameBtn","click", addNameBtn);
     setDomEvent("mdisp","change", mdispChange);
     setDomEvent("mainEndBtn","click", mainEnd);
-    document.addEventListener("click", clickHandl); //テーブルクリックイベント
+    document.addEventListener("click", clickHandl); //画面全体のクリックを拾うイベント登録
     setDomEvent("tblDelBtn","click", clickTblDel);
     setDomEvent("tblLeftBtn","click", clickTblLeft);
     setDomEvent("tblRigthBtn","click", clickTblRigth);

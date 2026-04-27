@@ -1,5 +1,5 @@
 //aero.js
-import { LStart, LEnd, LMask } from "../canvas/canvas2.js";
+import { LStart, LEnd, LMorg, LMask } from "../canvas/canvas2.js";
 
 const VhDef = 0.25; //容積比の範囲（＋ー）
 const steps = 20000;   //MAC積分　分割数　
@@ -9,19 +9,51 @@ function p2Vh(p){   //重心位置(%)から容積比を算出
   return result;
 }
 
-function c2a(ll){ //座標変換　canvasー＞aero
-  const all = [];
-  const alla = [];
-  for (const p of ll) {
-    const cnt = p[2] & LMask;
-    if (cnt === LStart || cnt === LEnd) {
-      all.push({ x: p[1], y: p[0] }); //変換
-      alla.push([ p[1], p[0] ]); //2次元
-    }
-    if (cnt === LEnd) break;  //終了
+function c2a(ll) {
+cMsg(`aa ${ll}`);
+
+  function xyCnv(p) {
+    return { x: p[1], y: p[0] };
   }
-  //cMsg (` 座標 ${alla} `)
-  return all;
+
+  let coords = [];
+  let def = 0;
+
+  let start = -1;
+  let end = -1;
+
+  // start / end 検出
+  for (let i = 0; i < ll.length; i++) {
+    const cont = ll[i][2] & LMask;
+
+    if (cont == LMorg) {
+      def = ll[i][1];
+    }
+
+    if (cont == LStart && start < 0) {
+      start = i;
+    }
+
+    if (cont == LEnd) {
+      end = i;
+      break;
+    }
+  }
+
+  if (start < 0 || end < 0) {
+    return { coords: [], def };
+  }
+
+  // ★ここが重要：一切いじらずそのまま通す
+  for (let i = start; i <= end; i++) {
+    const cont = ll[i][2] & LMask;
+
+    if (cont == LStart || cont == LEnd) {
+      coords.push(xyCnv(ll[i]));
+    }
+  }
+cMsg(`bb ${JSON.stringify(coords)}`);
+  return { coords, def };
 }
 
 function calcArea(pts) { //面積算出
@@ -69,10 +101,11 @@ function chordAtY(pts, y) {
   };
 }
 
-function calcMAC(cmw/*, area*/) { //MACの算出
+/*
+function calcMAC(cmw){  //}, area) { //MACの算出
   const pts = c2a(cmw);
-  const area = calcArea(pts);
-  const ys = pts.map(p => p.y);
+  const area = calcArea(pts.coords);
+  const ys = pts.coords.map(p => p.y);
   const yMin = Math.min(...ys);
   const yMax = Math.max(...ys);
 
@@ -83,7 +116,7 @@ function calcMAC(cmw/*, area*/) { //MACの算出
   for (let i = 0; i < steps; i++) { //積分ループ
     const y = yMin + i * dy;
 
-    const { xMin, xMax } = chordAtY(pts, y);  // ← spanで切る
+    const { xMin, xMax } = chordAtY(pts.coords, y);  // ← spanで切る
     if (xMin === null) continue;
 
     const c = xMax - xMin;
@@ -91,26 +124,11 @@ function calcMAC(cmw/*, area*/) { //MACの算出
     integral_c2 += c * c * dy;
     integral_yc += y * c * dy;
   }
-/*
-  const macLength = integral_c2 / area;
-  const macY = integral_yc / area;
-
-  // ここが今回の追加部分
-  const { xMin } = chordAtY(pts, macY);
-  const macDef = xMin;   // MAC前縁のchord位置
-
-  return {
-    area,
-    macLength,
-    macY,
-    macDef
-  };
-  */
   const length = integral_c2 / area;
   const y = integral_yc / area;
 
   // ここが今回の追加部分
-  const { xMin } = chordAtY(pts, y);
+  const { xMin } = chordAtY(pts.coords, y);
   const def = xMin;   // MAC前縁のchord位置
 
   return {
@@ -118,6 +136,48 @@ function calcMAC(cmw/*, area*/) { //MACの算出
     length,
     y,
     def
+  };
+}
+*/
+function calcMAC(cmw) { // MACの算出（完全版）
+  const pts = c2a(cmw);
+  const coords = pts.coords;
+
+  const area = calcArea(coords);
+
+  const ys = coords.map(p => p.y);
+  const yMin = Math.min(...ys);
+  const yMax = Math.max(...ys);
+
+  const dy = (yMax - yMin) / steps;
+
+  let integral_c2 = 0;   // ∫ c^2 dy
+  let integral_yc = 0;   // ∫ y * c dy
+  let integral_xc = 0;   // ∫ x_LE * c dy  ←追加（重要）
+
+  for (let i = 0; i < steps; i++) {
+    const y = yMin + i * dy;
+
+    const { xMin, xMax } = chordAtY(coords, y);
+//  cMsg(`y=${y} xMin=${xMin} xMax=${xMax}`); // ★追加ここだけ
+    if (xMin === null) continue;
+
+    const c = xMax - xMin;
+
+    integral_c2 += c * c * dy;
+    integral_yc += y * c * dy;
+    integral_xc += xMin * c * dy;   // ←これがポイント
+  }
+
+  const length = integral_c2 / area;   // MAC長さ
+  const y = integral_yc / area;        // MACのスパン位置
+  const x = integral_xc / area;        // MAC前縁位置（正しい定義）
+
+  return {
+    area,
+    length,
+    y,
+    def: x   // ← MAC前縁のx座標
   };
 }
 function calcTailMomentArm(Vh, main, tail) {  //重心位置から
@@ -143,12 +203,11 @@ function hsLH(p, mwa, hsa){ //水平尾翼モーメントアーム
 
   //aaaaa();
 
- //cMsg (`主翼`)
+ cMsg (`主翼 ${mwa}`)
   const mac_mw = calcMAC(mwa); //MAC算出
- //cMsg (`水平尾翼`)
+ cMsg (`水平尾翼 ${hsa}`)
   const mac_hs = calcMAC(hsa); //MAC算出
- //cMsg (`翼面積 mw-${mac_mw.area} hs-${mac_hs.area}`)
- //cMsg (`MAC    mw-${mac_mw.length} hs-${mac_hs.length}`)
+ cMsg (`翼面積 mw-${mac_mw.area} hs-${mac_hs.area}  MAC mw-${mac_mw.length} hs-${mac_hs.length}`)
   const Vh = p2Vh(p);
  //cMsg (`${p}% = ${Vh}`)
   const n = calcTailMomentArm(Vh, mac_mw, mac_hs);

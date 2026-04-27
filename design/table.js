@@ -104,7 +104,7 @@ const nameTbl = {
   const col = Number(ds.col);
 
   if (ds.col === "0"){  //col==0なら差分値の設定
-    const name = dbdBase()[pat][row+1][add? 1: 2];
+    const name = dbdBase().base[pat][row+1][add? 1: 2];
     if(name.endsWith("_i")){ //差分変数
       let defval = dsMode.val[pat][name+"_def"];
       const newDefVal = document.getElementById("dcDefValue").value;

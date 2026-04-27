@@ -7,7 +7,8 @@ import { design, } from "../design/design.js";
 //3/20 //import { MC } from "../canvas/canvas.js";
 import { MC2, A5Hp2, A4Vp1, LInv, } from "../canvas/canvas2.js";
 import { dsMode } from "./design.js";
-import { aero } from "../design/aero.js";
+import { aero }  from "../design/aero.js";
+import { aero3 } from "../design/aero3.js";
 import { IDB } from "../db/indexdDB.js";
 const dbdBase = () => IDB.dbd.base;
 
@@ -20,7 +21,7 @@ let val = {};   //変数
 let data = [];  //arrayデータ
 
 // #region　tableプルダウンの設定 setup_pd
-function rect_pd(){ //矩形翼設定
+function rect_pd(){ //矩形翼設定 プルダウンが変わらに場合は呼び出しなし
   function clrVal(pat,name){
     table.setVal (pat, name, "", false);  //値のみ更新
   }
@@ -44,19 +45,27 @@ function sweep_pd(info){  //後退角
   let anglDeg = "";
   let def = (val[info.pat].rootChord_o - val[info.pat].tipChord_o) * 0.25;
   switch(info.val){
-    case "後退角(0度)": break;
-    case "前縁直線":
+    case "0": break;//"後退角(0度)": break;
+    case "2": //"前縁直線": break;
       anglDeg = Math.atan(-def / val[info.pat].span_o) * 180 / Math.PI;
       break;
-    case "後縁直線":
+    case "3": //"後縁直線":
       const defL = (val[info.pat].rootChord_o - val[info.pat].tipChord_o) * 0.75;
       anglDeg = Math.atan(defL / val[info.pat].span_o) * 180 / Math.PI;
       break;
-    case "後退角度指定":
+    case "1": //"後退角度指定":
       return false;
   }
   cMsg (anglDeg)
   table.setVal(info.pat,"sweep_i",anglDeg);
+  return false;
+}
+function swedihedral2_pd(info){  //後退角
+  let anglDeg = "";
+  return false;
+}
+function vsType_pd(info){  //垂直尾翼の種類
+  let val = "";
   return false;
 }
 const pdNemu = {  //プルダウン名テーブル　プルダウン表示とクリア変数リスト
@@ -64,15 +73,17 @@ const pdNemu = {  //プルダウン名テーブル　プルダウン表示とク
   span_pd: {opt: ["半翼幅/翼弦 優先", "無効化"], cvName: ["hspan_i", "chord_i"]},
   rect_pd: {opt: ["矩形翼", "矩形翼優先"], func: rect_pd},
   sweep_pd: {opt: ["後退角度指定","後退角(0度)","前縁直線","後縁直線"],func: sweep_pd},
+  dihedral2_pd: {opt: ["無効","有効"],func: swedihedral2_pd},
+  vsType_pd: {opt: ["双垂直尾翼","双垂直尾翼根弦=端弦","単垂直尾翼","単垂直尾翼根弦=根弦"],func: vsType_pd},
 };
 function setup_pd(pat, td, name, callback){ //setpuからプルダウン設定要求
   const select = document.createElement("select");
 
   const options = pdNemu[name].opt; // 名前で分岐
 
-  options.forEach(v => {
+  options.forEach((v, i) => {
     const opt = document.createElement("option");
-    opt.value = v;
+    opt.value = i; //v;
     opt.textContent = v;
     select.appendChild(opt);
   });
@@ -115,11 +126,11 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
   let aria = 0, span = 0, chord = 0, aspect =0;  //矩形翼
   let rootChord, tipChord, tipDiff;   //テーパ
   let sweep;                          //後退角
-  let mac;
+  let mac={};
  //cMsg(`valProc ${pat}`)
 
 
-  function ll_mac(mac){ //MACをllに追記・MACの位置に線を引く
+  function ll_mac(mac){ //MMACの位置に線を引く
     if(pat === "vs")return; //垂直尾翼はMACを表示しない
 
     const macOffset = mac.length / 4 + mac.def
@@ -154,7 +165,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
           MC2.draw(dbdBase().val[step].hs,1); //薄い黒
 
         MC2.draw(dbdBase().val[step][pat]);
-        ll_mac(mac);  //llにMACを追記
+        ll_mac(mac);  //MACを追記
       MC2.restore(); // ← 色・太さ・点線設定など全部元に戻る
     }
   }
@@ -165,9 +176,29 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
     MC2.ll_start(list,span/2,tipDiff,LInv);
     MC2.ll_start(list,span/2,tipChord+tipDiff,LInv);
     MC2.ll_end(list,0,rootChord);
-
+cMsg(`YY ${list}`);
     mac = aero.calcMAC(list); //MAC算出
+    //dbdBase().val[step][pat].mac = mac;
+    patVal.mac_o = mac.length;  //MAC長確定
+    patVal.macDef_o = mac.def
+/*
+    const arg = {
+      span: span/2,
+      rootChord: rootChord,
+      tipChord: tipChord,
+      cg: 60,
+      tailArm: 120
+    };
+    const xmac = aero3.evaluateWing(arg); //MAC算出
+    mac.area = xmac.area;
+    mac.length = xmac.MAC;
+    mac.y = xmac.MAC_y;
+    mac.def = xmac.MAC_x;
 
+const t1 = aero3.calcMAC_taper(span, aria, Number(patVal.taper_i));
+cMsg(`t1 ${JSON.stringify(t1)}`);
+*/
+cMsg(`XXz ${step} ${mac.length}`);
     if(pat != "body"){
       if(pat === "vs"){ //双垂直尾翼ならX座標[0]を移動
         const span = dbdBase().val.base.hs.span_o/2;
@@ -204,7 +235,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
         }
         if(pat === "vs"){
           //taria /= 2;  //双垂直尾翼
-          table.setVal (pat, "chord_i",dsMode.val["hs"]["rootChord_o"], false);
+          table.setVal (pat, "chord_i",dspVal(dsMode.val["hs"]["rootChord_o"]), false);
         }
       }
     }
@@ -279,10 +310,11 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
   }//rectProc
   function taperProc(){ //テーパ翼処理
     const taper = Number(patVal.taper_i);   //テーパー
-    if(!taper){
-      patVal.tipChord_o = chord;
-      patVal.rootChord_o = chord;
-      patVal.tipDiff_o = 0;
+    //if(!taper){
+    if(false){
+      patVal.tipChord_o = 0;//chord;
+      patVal.rootChord_o = chord*2;//chord;
+      patVal.tipDiff_o = chord*2;//0;
     }else{
       table.setColor(pat,"taper_i",cEnble);
       rootChord = Number(patVal.rootChord_o)*2 / (taper + 1);
@@ -312,17 +344,6 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
 cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDiff_o}`)
       //patVal.area_o = aria;
     }
-    if(true){
-      let v1,v2;
-      v2 = dspVal(patVal.span_o)
-      v1 = v2/2;
-      cvmsg[pat].push(`　幅:　${v1}(${v2})`);
-      v1 = dspVal(patVal.rootChord_o)
-      v2 = dspVal(patVal.tipChord_o)
-      cvmsg[pat].push(`　根弦:　${v1}　端弦:　${v2}`);
-      cvmsg[pat].push(`　MAC:　XX 　重心:　xx`);
-    }
-    MC2.sl_canvas(cvmsg[pat]);
     return true;
   }//sweepProc
 
@@ -351,8 +372,19 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
       crLliP("sweep");    //線データ作成
     }
   }else{
+      //MC2.sl_canvas(cvmsg[pat]);
       delete dbdBase().val.rect?.[pat];
   }
+    if(true){
+      let v1,v2;
+      v2 = dspVal(patVal.span_o)
+      v1 = v2/2;
+      cvmsg[pat].push(`　幅:　${v1}(${v2})`);
+      cvmsg[pat].push(`　根弦:　${dspVal(patVal.rootChord_o)}　端弦:　${dspVal(patVal.tipChord_o)}`);
+      cvmsg[pat].push(`　MAC:　${dspVal(patVal.mac_o)}　def:　${dspVal(patVal.macDef_o)}`);
+      cvmsg[pat].push(`　根弦:　${dspVal(patVal.rootChord_o)}　端弦:　${dspVal(patVal.tipChord_o)}`);
+      cvmsg[pat].push(`　重心:　${dspVal(patVal.centerGgravity_i)}`);
+    }
   MC2.sl_canvas(cvmsg[pat]);
 
   parts.setCanvas();  //全体canvasの表示

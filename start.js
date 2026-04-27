@@ -115,7 +115,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     iframe.style.display = e.target.value;
   });
 
-  document.getElementById("title").textContent = "Hand Catapult Launch Glider Design";; //タイトル名
+  //document.getElementById("title").textContent = "Hand Catapult Launch Glider Design"; //タイトル名
 
  //   debugger
  // anDesign.init(); 
