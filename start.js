@@ -82,7 +82,7 @@ async function init(initDom = false) {
 }
   
 function docOpen(){
-  window.open("DOC/index.html?v1", "_blank", "noopener");
+  window.open("DOC/スマホ初回起動.html?v1", "_blank", "noopener");
 }
 
 
