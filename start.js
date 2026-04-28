@@ -5,6 +5,7 @@ import { parts } from "./parts/parts.js";
 //import { anDesign } from "./design/acNumDesign_2.js"; //空力計算サンプル
 import { IDB } from "./db/indexdDB.js";
 
+
 const upDbg = `
 <!-- デバッグ/操作ボタン -->　　
 <button id="btn1Start" ></button>
@@ -79,7 +80,7 @@ async function init(initDom = false) {
   });
 */
 }
-
+  
 function docOpen(){
   window.open("DOC/index.html?v1", "_blank", "noopener");
 }

@@ -144,7 +144,7 @@ const chtml = `
 
 <hr>
 　<button id="saveBtn" disabled>保存</button>
-　　<button id="tblDelBtn">Delet</button>
+　　　　　　　　　　　　　　　　<button id="tblDelBtn">Delet</button>
 <button id="tblLeftBtn">Left(+)</button>
 <button id="tblRigthBtn">Rigth(-)</button>
 <div class="rowContainer">
