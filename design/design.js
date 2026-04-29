@@ -17,17 +17,24 @@ export let mName = "";  //table名
 
 let selectedTd = null;  //最後に選択したテーブル
 function clickHandl(e){ //画面全体のクリックを拾うイベント
+  if (e.target.closest('.no-global-click')) return; // ← このボタンは無視
   const td = e.target.closest("td");  //クリックされた要素から最も近いtdを取得
 
+  if(selectedTd === td){
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
+    e.preventDefault(); // ← これ追加
+    //document.activeElement.blur(); // ←これに変更    
+    /*
+    const input = e.target.closest("input, textarea");
+    if (input) input.blur();  // ← nullチェック
+    input.blur();
+    */
+    return; //同じセルがクリックされたら何もしない
+  }
   if (selectedTd) {
     selectedTd.classList.remove("active");  // 前回選択されたtdのハイライトを解除
-    if(selectedTd.dataset.name?.endsWith("_i")){ //入力セルだったら確定処理
-      table.onCellCommit({
-        name: selectedTd.dataset.name,
-        val: selectedTd.textContent, //value,
-        pat: selectedTd.closest("table").dataset.block,
-      });
-    }
   }
   selectedTd = td;
   if (selectedTd)   //tdがクリックされた場合
@@ -53,7 +60,7 @@ async function chgcaBtn(add){  //名前(id)の変更/追加
   const msg = add? "add ": "chg ";
   const newName = document.getElementById("newName").value.trim();  //ターゲット名
   if(newName !== ""){
-    if (dbData.target.apList.some(t => t[0] === newName)) {
+    if (IDB.dbd.baseList.apList.some(t => t[0] === newName)) {
       alert("機体名" + newName + "は既にあり、作成できません");
       return;
     }
@@ -71,10 +78,12 @@ async function chgcaBtn(add){  //名前(id)の変更/追加
     alert("機体名が有りません");
 }
 async function saveCurrentTarget() { //編集データの保存　ボタン処理
+  if(!saveBtn.disabled){
  cMsg('saveCurrentTarget');
-  saveBtn.disabled = true;  saveBtn.textContent = "保存中";
-  await db.saveAp();  //データ書き込
-  saveBtn.disabled = false; saveBtn.textContent = "保存";
+    saveBtn.textContent = "保存中";
+    await db.saveAp();  //データ書き込
+    saveBtn.disabled = true; saveBtn.textContent = "　　";
+  }
 }
 function chgNameBtn(add){  //名前の変更開始
   const domTx = `
@@ -132,10 +141,8 @@ const chtml = `
     <option value="all">全て</option>
   </select>
 
-  <!-- ダブルクリック加算値操作UI -->
-  　差分値 <input id="dcDefValue" type="number" value="5" style="width:5em;">
 
-  　<button id="mainEndBtn">終了</button>
+  　<button id="baseEndBtn">終了</button>
   　<button id="chgNameBtn">名前変更</button>
   　<button id="addNameBtn">新機体</button>
 </div>
@@ -143,8 +150,10 @@ const chtml = `
 <div id="dgnTable"></div>  <!-- 設計テーブル表示 -->
 
 <hr>
-　<button id="saveBtn" disabled>保存</button>
-　　　　　　　　　　　　　　　　<button id="tblDelBtn">Delet</button>
+　<button id="saveBtn" disabled class="no-global-click">　　</button>
+　　　　　　　　　　　　　
+差分値 <input id="dcDefValue" type="number" value="5" style="width:5em;"> <!-- ダブルクリック加算値 -->
+<button id="tblDelBtn">Delet</button>
 <button id="tblLeftBtn">Left(+)</button>
 <button id="tblRigthBtn">Rigth(-)</button>
 <div class="rowContainer">
@@ -177,20 +186,18 @@ function init(initDom = false) {  //初期起動
     setDomEvent("chgNameBtn","click", chgNameBtn);
     setDomEvent("addNameBtn","click", addNameBtn);
     setDomEvent("mdisp","change", mdispChange);
-    setDomEvent("mainEndBtn","click", mainEnd);
+    setDomEvent("baseEndBtn","click", baseEnd);
     document.addEventListener("click", clickHandl); //画面全体のクリックを拾うイベント登録
     setDomEvent("tblDelBtn","click", clickTblDel);
     setDomEvent("tblLeftBtn","click", clickTblLeft);
     setDomEvent("tblRigthBtn","click", clickTblRigth);
-
-    setDomEvent("mainEndBtn","click", mainEnd);
 
     MC2.baseInit()
 
     setDomEvent("saveBtn","click", saveCurrentTarget);
   }
   chTitle(`基本設計　機種:　` + IDB.dbd.base.id);
-  document.getElementById("saveBtn").disabled = true; //保存ボタン非表示
+  saveBtn.disabled = true; //保存ボタン非表示
 
   mode = dbdBase().mode; //EMSモードクロージャ起動
   ddDom = ddDomTable[mode];
@@ -223,6 +230,7 @@ function clickTblDel(e){
         if(selectedTd.dataset.name.endsWith("_i")){ //入力セル
           selectedTd.textContent = "";
           selectedTd.classList.add("active");
+          selectedTd.focus(); // ← これ追加
           e.stopPropagation();
         }
       }
@@ -238,7 +246,6 @@ function clickTblLR(e,pm){
     }
   }
 }
-
 function clickTblLeft(e){
   clickTblLR(e,true);
 }
@@ -246,8 +253,13 @@ function clickTblRigth(e){
   clickTblLR(e,false);
 }
 
-function mainEnd(){
- cMsg(`mainEndBtn`);
+function baseEnd(){
+ cMsg(`baseEndBtn`);
+  if(!saveBtn.disabled){
+    if (confirm("更新データが有ります、保存しますか？"))
+      saveCurrentTarget();
+  }
+  document.removeEventListener("click", clickHandl);
   db.req({req: 'apList'});
 }
 

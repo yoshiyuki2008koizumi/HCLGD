@@ -15,7 +15,6 @@ button, select  {  /* ボタンの標準設定 */
   font-size: 14px;   /* 読みやすいサイズ */
 }
 
-
 #acList {
   width: 400px; height: 200px; 
   font-family: monospace;

@@ -10,7 +10,7 @@ function onCellCommit(info, commit = true) { //入力セル確定callback
  // cMsg(`キー入力 ${JSON.stringify(info)}`);
   dsMode.val[info.pat][info.name] = info.val? info.val: "";   //値の更新
   document.getElementById("saveBtn").disabled = false;        //保存ボタン表示
-
+  document.getElementById("saveBtn").textContent = "保存";
   if(info.name.endsWith("_i") & commit === true){
     dsMode.valProc(info.pat);  //入力データを修正、再計算
     if(info.name == "taper_i"){   //テーパなら後退角も修正要
@@ -58,12 +58,14 @@ function enableInputCells(td, callback) {     //入力セルcallback
       }
     }
     td.textContent = value;
-    td.dataset.prev = value; // 新しい確定値を保存
-    callback({
-      name: td.dataset.name,
-      val: value,//value,
-      pat: td.closest("table").dataset.block,
-    });
+    if(value != td.dataset.prev){
+      td.dataset.prev = value; // 新しい確定値を保存
+      callback({
+        name: td.dataset.name,
+        val: value,//value,
+        pat: td.closest("table").dataset.block,
+      });
+    }
   });
 }
 function handleCellAction(add, td) {  // (左ダブルクリック-false、右クリック=true
@@ -203,7 +205,7 @@ function setup(ix,base, pat) {  //テーブル初期表示
       const name = row2[j];           //セルの変数名
       if(name !== ""){
         td.dataset.name = name;
-        const val = dbdBase().val[base][pat][name];
+        const val = dspVal(dbdBase().val[base][pat][name],1);
         //td.textContent = val? val: "";  //変数値で初期化
         //td.textContent = fNum(val); //val? val: "";  //変数値で初期化
         td.textContent = val? val: "";  //変数値で初期化
@@ -229,21 +231,23 @@ function setup(ix,base, pat) {  //テーブル初期表示
     tableDom.appendChild(table);
   }
   addTd("sweep_i","adDs","enM");  //td　dataset追加
-  tableDom.addEventListener("dblclick", e => { //左ダブルクリック
+  if(false){
+    tableDom.addEventListener("dblclick", e => { //左ダブルクリック
 
-    if (e.button !== 0) return;
-    const td = e.target.closest("td");
-    if (!td) return;
+      if (e.button !== 0) return;
+      const td = e.target.closest("td");
+      if (!td) return;
 
-    handleCellAction(true, td);
-  });
-  tableDom.addEventListener("contextmenu", e => {  //右クリック
-    const td = e.target.closest("td");
-    if (!td) return;
+      handleCellAction(true, td);
+    });
+    tableDom.addEventListener("contextmenu", e => {  //右クリック
+      const td = e.target.closest("td");
+      if (!td) return;
 
-    e.preventDefault(); //これは必要
-    handleCellAction(false, td);
-  });
+      e.preventDefault(); //これは必要
+      handleCellAction(false, td);
+    });
+  }
 }
 
 function init(){   //初期起動

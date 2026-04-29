@@ -45,7 +45,7 @@ function sweep_pd(info){  //後退角
   let anglDeg = "";
   let def = (val[info.pat].rootChord_o - val[info.pat].tipChord_o) * 0.25;
   switch(info.val){
-    case "0": break;//"後退角(0度)": break;
+    case "1": break;//"後退角(0度)": break;
     case "2": //"前縁直線": break;
       anglDeg = Math.atan(-def / val[info.pat].span_o) * 180 / Math.PI;
       break;
@@ -53,7 +53,7 @@ function sweep_pd(info){  //後退角
       const defL = (val[info.pat].rootChord_o - val[info.pat].tipChord_o) * 0.75;
       anglDeg = Math.atan(defL / val[info.pat].span_o) * 180 / Math.PI;
       break;
-    case "1": //"後退角度指定":
+    case "0": //"後退角度指定":
       return false;
   }
   cMsg (anglDeg)

@@ -35,12 +35,12 @@ function check(){
   }
 }
 /*
-★icon
+★icon　headの先頭に追加
 <link rel="icon" type="image/png" sizes="32X32" href="../icon/DOC32icon.png">
 <link rel="icon" type="image/png" sizes="128x128" href="../icon/DOC128icon.png">
 <link rel="apple-touch-icon" href="../icon/DOC128icon.png">
 
-★チェック
+★チェック bodyの最後に追加
 <script type="module">
 import { CHKBRO } from "../chkBrowser.js"; //debug★★
   CHKBRO.check();  //ブラウザチェック
