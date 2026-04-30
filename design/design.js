@@ -17,8 +17,10 @@ export let mName = "";  //table名
 
 let selectedTd = null;  //最後に選択したテーブル
 function clickHandl(e){ //画面全体のクリックを拾うイベント
+  //if (e.target.closest("select")) return; // ★追加
+  //if (e.target.closest('.no-global-click')) return; // ← このボタンは無視
   const td = e.target.closest("td");  //クリックされた要素から最も近いtdを取得
-  if(td){
+  if (td) { 
     if(selectedTd === td){
       if (document.activeElement) {
           document.activeElement.blur();
@@ -150,7 +152,7 @@ const chtml = `
 <div id="dgnTable"></div>  <!-- 設計テーブル表示 -->
 
 <hr>
-　<button id="saveBtn" disabled>　　</button>
+　<button id="saveBtn" disabledc>　　</button>
 　　　　　　　　　　　　　
 差分値 <input id="dcDefValue" type="number" value="5" style="width:5em;"> <!-- ダブルクリック加算値 -->
 <button id="tblDelBtn">Delet</button>
@@ -191,10 +193,27 @@ function init(initDom = false) {  //初期起動
     setDomEvent("tblDelBtn","click", clickTblDel);
     setDomEvent("tblLeftBtn","click", clickTblLeft);
     setDomEvent("tblRigthBtn","click", clickTblRigth);
+    setDomEvent("saveBtn","click", saveCurrentTarget);
 
     MC2.baseInit()
+    if(true){
+      const sel = document.getElementById("mdisp");
 
-    setDomEvent("saveBtn","click", saveCurrentTarget);
+      if (sel) {
+        sel.addEventListener("change", e => {
+          console.log("CHANGE:", sel.value);
+        });
+
+        sel.addEventListener("input", e => {
+          console.log("INPUT:", sel.value);
+        });
+
+        sel.addEventListener("click", e => {
+          console.log("CLICK value:", sel.value);
+        });
+      }
+    }
+
   }
   chTitle(`基本設計　機種:　` + IDB.dbd.base.id);
   saveBtn.disabled = true; //保存ボタン非表示

@@ -77,6 +77,7 @@ function req(obj = {req: "enter"}, ...args) { //データベース要求
  //   hEerr(`Unknown request: ${obj.req}`);
   }
 }
+/*
 function ret(obj, ...arg){ //db.reqのcallback（子ページの起動）
  //cMsg(`db.ret ` + JSON.stringify(obj, null, 2));
 
@@ -105,6 +106,34 @@ function ret(obj, ...arg){ //db.reqのcallback（子ページの起動）
     throw e; // DOMイベントと同じ挙動
   }
   
+}
+*/
+function ret(obj, ...arg) {
+  try {
+
+    let dom = false;
+
+    if (obj.ret !== cp.g_child.ret) {
+      dom = true;
+      const html = cp.childeMap[obj.ret].chtml;
+      document.getElementById("childContent").innerHTML = html;
+    }
+
+    cp.g_child = obj;
+
+    childChgMsg.style.display = 'none';
+    childContent.style.display = 'block';
+
+    requestAnimationFrame(() => {
+      cp.childeMap[obj.ret].init(dom);
+    });
+
+    return true;
+
+  } catch (e) {
+    console.error("gasRet内で例外:", e, obj.ret);
+    throw e;
+  }
 }
 
 // #region データベースアクセス
