@@ -17,28 +17,28 @@ export let mName = "";  //table名
 
 let selectedTd = null;  //最後に選択したテーブル
 function clickHandl(e){ //画面全体のクリックを拾うイベント
-  if (e.target.closest('.no-global-click')) return; // ← このボタンは無視
   const td = e.target.closest("td");  //クリックされた要素から最も近いtdを取得
-
-  if(selectedTd === td){
-    if (document.activeElement) {
-        document.activeElement.blur();
+  if(td){
+    if(selectedTd === td){
+      if (document.activeElement) {
+          document.activeElement.blur();
+      }
+      e.preventDefault(); // ← これ追加
+      //document.activeElement.blur(); // ←これに変更    
+      /*
+      const input = e.target.closest("input, textarea");
+      if (input) input.blur();  // ← nullチェック
+      input.blur();
+      */
+      return; //同じセルがクリックされたら何もしない
     }
-    e.preventDefault(); // ← これ追加
-    //document.activeElement.blur(); // ←これに変更    
-    /*
-    const input = e.target.closest("input, textarea");
-    if (input) input.blur();  // ← nullチェック
-    input.blur();
-    */
-    return; //同じセルがクリックされたら何もしない
+    if (selectedTd) {
+      selectedTd.classList.remove("active");  // 前回選択されたtdのハイライトを解除
+    }
+    selectedTd = td;
+    if (selectedTd)   //tdがクリックされた場合
+      selectedTd.classList.add("active"); // 選択されたtdをハイライト
   }
-  if (selectedTd) {
-    selectedTd.classList.remove("active");  // 前回選択されたtdのハイライトを解除
-  }
-  selectedTd = td;
-  if (selectedTd)   //tdがクリックされた場合
-    selectedTd.classList.add("active"); // 選択されたtdをハイライト
 }
 
 const ddDomTable = {
@@ -150,7 +150,7 @@ const chtml = `
 <div id="dgnTable"></div>  <!-- 設計テーブル表示 -->
 
 <hr>
-　<button id="saveBtn" disabled class="no-global-click">　　</button>
+　<button id="saveBtn" disabled>　　</button>
 　　　　　　　　　　　　　
 差分値 <input id="dcDefValue" type="number" value="5" style="width:5em;"> <!-- ダブルクリック加算値 -->
 <button id="tblDelBtn">Delet</button>
