@@ -8,17 +8,16 @@ import { design, } from "../design/design.js";
 import { MC2, A5Hp2, A4Vp1, LInv, } from "../canvas/canvas2.js";
 import { dsMode } from "./design.js";
 import { aero }  from "../design/aero.js";
-import { aero3 } from "../design/aero3.js";
+//import { aero3 } from "../design/aero3.js";
 import { IDB } from "../db/indexdDB.js";
 const dbdBase = () => IDB.dbd.base;
 
 const cvmsg = {}; //カンヴァス表示メッセージ
 const patname = {mw: "主翼", hs: "水平尾翼", vs: "垂直尾翼"}
 
-let step = "base";
-
-let val = {};   //変数
-let data = [];  //arrayデータ
+let step = "base";  //設計ステップ base, modif, bReinfo, mReinfo
+let val = {};       //変数　dbdBase().val[step];
+let data = [];      //シート配列データ　dbdBase()[step];
 
 // #region　tableプルダウンの設定 setup_pd
 function rect_pd(){ //矩形翼設定 プルダウンが変わらに場合は呼び出しなし
@@ -65,7 +64,7 @@ function swedihedral2_pd(info){  //後退角
   return false;
 }
 function vsType_pd(info){  //垂直尾翼の種類
-  let val = "";
+//  let val = "";
   return false;
 }
 const pdNemu = {  //プルダウン名テーブル　プルダウン表示とクリア変数リスト
@@ -76,6 +75,7 @@ const pdNemu = {  //プルダウン名テーブル　プルダウン表示とク
   dihedral2_pd: {opt: ["無効","有効"],func: swedihedral2_pd},
   vsType_pd: {opt: ["双垂直尾翼","双垂直尾翼根弦=端弦","単垂直尾翼","単垂直尾翼根弦=根弦"],func: vsType_pd},
 };
+
 function setup_pd(pat, td, name, callback){ //setpuからプルダウン設定要求
   const select = document.createElement("select");
 
@@ -87,9 +87,8 @@ function setup_pd(pat, td, name, callback){ //setpuからプルダウン設定�
     opt.textContent = v;
     select.appendChild(opt);
   });
-  if(pdNemu[name].func !== undefined){
-    select.value = data[pat][td.dataset.row][td.dataset.col];
-  }
+  //select.value = data[pat][td.dataset.row][td.dataset.col];
+  select.value = val[pat][name];
 
   td.textContent = "";
   td.appendChild(select);
@@ -117,6 +116,10 @@ function setup_pd(pat, td, name, callback){ //setpuからプルダウン設定�
       select.selectedIndex = 0; //プルダウンを戻す。
     callback(info);   //tabe側を呼び出す。
   });
+}
+
+function getVal(name){
+  return patVal[name];
 }
 
 function valProc(pat = null){  //基本設計数値処理(入力値変更)　起動時とtabe入力から呼び出す

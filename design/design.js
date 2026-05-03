@@ -220,7 +220,9 @@ function init(initDom = false) {  //初期起動
   chTitle(`基本設計　機種:　` + IDB.dbd.base.id);
   saveBtn.disabled = true; //保存ボタン非表示
 
-  mode = dbdBase().mode; //EMSモードクロージャ起動
+  mode = dbdBase().mode; //設計のmode読み出し
+  document.getElementById("dStepSel").value = mode; //設計ステップ選択切替ボタン　初期値設定
+
   ddDom = ddDomTable[mode];
   const registry = {
     base: EMSbase,
@@ -280,7 +282,7 @@ function baseEnd(){
     if (confirm("更新データが有ります、保存しますか？"))
       saveCurrentTarget();
   }
-  document.removeEventListener("click", clickHandl);
+  document.removeEventListener("click", clickHandl);  //画面全体のクリックを拾うイベント削除
   db.req({req: 'apList'});
 }
 

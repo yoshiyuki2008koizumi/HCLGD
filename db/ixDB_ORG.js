@@ -103,7 +103,12 @@ export const ixDB_ORG = {
           "sweepDiff_o": "",
           "mac_o": "",
           "mac_def_o": "",
-          "aria_str": ""
+          "aria_str": "",
+          "rect_pd": 0,
+          "area_pd": 0,
+          "span_pd": 0,
+          "sweep_pd": 0,
+          "dihedral2_pd": 0
         },
         "hs": {
           "area_io": "",
@@ -130,7 +135,10 @@ export const ixDB_ORG = {
           "sweepDiff_o": "",
           "mac_o": "",
           "mac_def_o": "",
-          "aria_str": ""
+          "aria_str": "",
+          "area_pd": 0,
+          "span_pd": 0,
+          "sweep_pd": 0
         },
         "vs": {
           "area_io": "",
@@ -157,7 +165,10 @@ export const ixDB_ORG = {
           "sweepDiff_o": "",
           "mac_o": "",
           "mac_def_o": "",
-          "aria_str": ""
+          "aria_str": "",
+          "area_pd": 0,
+          "span_pd": 0,
+          "sweep_pd": 0
         }
       }
     }

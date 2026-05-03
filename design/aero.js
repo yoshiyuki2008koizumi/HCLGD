@@ -9,9 +9,8 @@ function p2Vh(p){   //重心位置(%)から容積比を算出
   return result;
 }
 
-function c2a(ll) {
-//cMsg(`aa ${ll}`);
-
+function c2a(ll){ //座標変換　canvasー＞aero
+cMsg(`aa2 ${ll}`);
   function xyCnv(p) {
     return { x: p[1], y: p[0] };
   }
@@ -52,7 +51,62 @@ function c2a(ll) {
       coords.push(xyCnv(ll[i]));
     }
   }
-//cMsg(`bb ${JSON.stringify(coords)}`);
+/*
+  function xyCnv(p){ //座標変換　canvasー＞aero
+    return { x: p[1], y: p[0] };
+  }
+  let coords = [];
+  const alla = [];
+  let def = 0;
+  const length = ll.length;
+  let start = false;
+  let end;
+cMsg(`aa ${ll}`);
+  for(let i = 0; i < length; i++){
+    const cont = ll[i][2] & LMask;
+    if(cont == LMorg){
+      def = ll[i][2];  //MAC前縁位置　定義
+    }else if(cont == LStart){
+      if(start === false)start = i
+    }else if(cont == LEnd){
+      end = i;
+      break;
+    }
+  }
+  coords.push(xyCnv(ll[start]));
+  for(let i = 0; i < end; i++){
+    const data = ll[end-i];
+    const cnt = data[2] & LMask;
+    switch(cnt){
+      case LStart:
+      case LEnd:
+        coords.push(xyCnv(data)); //変換
+        break
+    }
+  }
+*/
+/*
+  coords = [];
+  for (const p of ll) {
+    const cnt = p[2] & LMask;
+    switch(cnt){
+      case LMorg: 
+        def = p[1];  //MAC前縁位置　定義
+        break;
+      case LStart:
+      case LEnd:
+        if (cnt === LStart || cnt === LEnd) {
+            coords.push({ x: p[1], y: p[0] }); //変換
+            alla.push([ dspVal(p[1]), dspVal(p[0]) ]); //2次元
+            break;
+        }
+        break;  //終了
+    }
+    if (cnt === LEnd) break;  //終了
+  }
+    */
+ //  cMsg (` 座標 ${alla} `)
+cMsg(`bb ${JSON.stringify(coords)}`);
   return { coords, def };
 }
 
@@ -220,7 +274,200 @@ export const aero = {hsLH, calcMAC};
 //import { aero } from "../db/aero.js";
 //end of file
 
-/*
+/* ********************************************************
+// ==============================
+// ① 翼生成（入力 → 座標）
+// ==============================
+function buildWing(span, rootChord, tipChord) {
+  const list = [];
+
+  const half = span / 2;
+  const tipDiff = 0;
+
+  // 翼根前縁
+  MC2.ll_start(list, 0, 0, LInv);
+
+  // 翼端前縁
+  MC2.ll_start(list, half, tipDiff, LInv);
+
+  // 翼端後縁
+  MC2.ll_start(list, half, tipChord + tipDiff, LInv);
+
+  // 翼根後縁
+  MC2.ll_end(list, 0, rootChord);
+
+  return list;
+}
+
+
+// ==============================
+// ② MAC計算（既存をそのまま使用）
+// ==============================
+function calcMAC(cmw) {
+  const pts = c2a(cmw);
+  const coords = pts.coords;
+
+  const area = calcArea(coords);
+
+  const ys = coords.map(p => p.y);
+  const yMin = Math.min(...ys);
+  const yMax = Math.max(...ys);
+
+  const steps = 50; // 固定でOK（比較用ならこれで十分）
+  const dy = (yMax - yMin) / steps;
+
+  let integral_c2 = 0;
+  let integral_yc = 0;
+  let integral_xc = 0;
+
+  for (let i = 0; i < steps; i++) {
+    const y = yMin + i * dy;
+
+    const { xMin, xMax } = chordAtY(coords, y);
+    if (xMin === null) continue;
+
+    const c = xMax - xMin;
+
+    integral_c2 += c * c * dy;
+    integral_yc += y * c * dy;
+    integral_xc += xMin * c * dy;
+  }
+
+  return {
+    area,
+    MAC: integral_c2 / area,
+    y: integral_yc / area,
+    x: integral_xc / area
+  };
+}
+
+
+// ==============================
+// ③ 設計評価（ここが本体）
+// ==============================
+function evaluateWing(param) {
+
+  // 翼生成
+  const wing = buildWing(
+    param.span,
+    param.rootChord,
+    param.tipChord
+  );
+
+  // MAC計算
+  const mac = calcMAC(wing);
+
+  // モーメント評価
+  const cgOffset = mac.y - param.cg;
+  const tailArm = param.tailArm;
+  const momentArm = tailArm - mac.y;
+
+  return {
+    MAC: mac.MAC,
+    MAC_y: mac.y,
+    MAC_x: mac.x,
+    area: mac.area,
+
+    cg: param.cg,
+    tailArm: tailArm,
+
+    cgOffset: cgOffset,
+    momentArm: momentArm
+  };
+}
+
+const result = evaluateWing({
+  span: 200,
+  rootChord: 50,
+  tipChord: 20,
+  cg: 60,
+  tailArm: 120
+});
+
+cMsg(result);
+export const earo3 = {
+  evaluateWing
+};
+//import { earo3 } from "./aero3.js";
+*********************************************************
+
+
+はい、その変更で大丈夫です。
+その関数はあなたの設計用途（台形基準MAC）に対して正しく機能します。
+
+✔ 確認（この関数で合っているか）
+
+あなたのコード：
+
+面積一定
+スパン一定
+テーパ比指定
+
+👉 すべて整合しています
+
+✔ そのまま使ってOK
+
+特にこの3つが重要：
+
+const root = (2 * area) / (span * (1 + taperRatio));
+const MAC  = (2/3) * root * (1 + taperRatio + taperRatio*taperRatio) / (1 + taperRatio);
+const y    = halfSpan * (1 + 2*taperRatio) / (3 * (1 + taperRatio));
+
+👉 この3行が正しければ成立します
+
+✔ あとはこれだけ注意
+① span の意味
+
+👉 全幅で渡すこと
+
+span = 全翼幅
+② area の意味
+
+👉 全翼面積で渡すこと
+
+area = 左右合計
+✔ よくあるズレ（ここだけ注意）
+
+もし：
+
+span を半翼で渡す
+area を片翼で渡す
+
+👉 MACがズレます
+
+✔ 安全チェック（おすすめ）
+
+1回だけ確認：
+
+const t1 = calcMAC_taper(200, 10000, 1.0); // 矩形
+const t2 = calcMAC_taper(200, 10000, 0.1); // テーパ
+
+cMsg(t1.MAC); // = root と一致するはず
+cMsg(t2.MAC); // これより小さくなる
+✔ あなたの設計に対して
+
+👉 この関数は：
+
+設計基準（ブレない）
+比較が簡単
+モーメント計算に安定
+
+👉 目的に完全一致しています
+
+✔ 今後の使い方
+const base = calcMAC_taper(span, area, taper);
+
+// これを基準に
+// 変形後は「面積だけチェック」
+✔ 最後
+
+👉 ここまで来れば、もう迷わない状態です
+👉 あとは「形を作る → 面積調整」でOK
+
+必要になったらいつでもどうぞ。
+*/
+
+/***********************************************************************************************************************************************************
 大きな流れは合っています。片翼座標だけで面積・MACを出すのも問題ありません。主翼も尾翼も同じ「片翼」で計算しているなら、面積比では両方とも2倍されるので打ち消し合います。
 
 ただ、1点かなり怪しい所があります。 const macDef = xMin; 
