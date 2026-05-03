@@ -14,35 +14,28 @@ const dbdBase = () => IDB.dbd.base;
 export let mode = {};   //mode
 export let dsMode = {}; //設計モード呼び出し
 export let mName = "";  //table名
-
+/* 5/1
 let selectedTd = null;  //最後に選択したテーブル
 function clickHandl(e){ //画面全体のクリックを拾うイベント
-  //if (e.target.closest("select")) return; // ★追加
-  //if (e.target.closest('.no-global-click')) return; // ← このボタンは無視
   const td = e.target.closest("td");  //クリックされた要素から最も近いtdを取得
   if (td) { 
-    if(selectedTd === td){
+    if(selectedTd !== td){
+      if (selectedTd) {
+        selectedTd.classList.remove("active");  // 前回選択されたtdのハイライトを解除
+      }
+      selectedTd = td;
+      if (selectedTd)   //tdがクリックされた場合
+        selectedTd.classList.add("active"); // 選択されたtdをハイライト
+    }else{
       if (document.activeElement) {
           document.activeElement.blur();
       }
       e.preventDefault(); // ← これ追加
-      //document.activeElement.blur(); // ←これに変更    
-      /*
-      const input = e.target.closest("input, textarea");
-      if (input) input.blur();  // ← nullチェック
-      input.blur();
-      */
-      return; //同じセルがクリックされたら何もしない
+      //return; //同じセルがクリックされたら何もしない
     }
-    if (selectedTd) {
-      selectedTd.classList.remove("active");  // 前回選択されたtdのハイライトを解除
-    }
-    selectedTd = td;
-    if (selectedTd)   //tdがクリックされた場合
-      selectedTd.classList.add("active"); // 選択されたtdをハイライト
   }
 }
-
+*/
 const ddDomTable = {
   base:    { oder: ["mw", "hs", "vs"], aria: [0,1,2], tbl: [0,1,2], canvas: [0,1,2] },
   modif:   { oder: ["mw", "hs", "vs"], aria: [0,1,2], tbl: [0,1,2], canvas: [0,1,1] },
@@ -189,7 +182,7 @@ function init(initDom = false) {  //初期起動
     setDomEvent("addNameBtn","click", addNameBtn);
     setDomEvent("mdisp","change", mdispChange);
     setDomEvent("baseEndBtn","click", baseEnd);
-    document.addEventListener("click", clickHandl); //画面全体のクリックを拾うイベント登録
+//    document.addEventListener("click", clickHandl); //画面全体のクリックを拾うイベント登録  tableだけに修正5/1
     setDomEvent("tblDelBtn","click", clickTblDel);
     setDomEvent("tblLeftBtn","click", clickTblLeft);
     setDomEvent("tblRigthBtn","click", clickTblRigth);

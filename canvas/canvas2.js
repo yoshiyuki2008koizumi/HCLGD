@@ -244,6 +244,7 @@ function draw(ll, col = null, cid = null){  //canvasに線を引く
     selCanvas(cid);
   }
   ll_Canvas(ll, col);
+//  cMsg (`  draw ${ll}`);
 }
 
 
@@ -266,7 +267,7 @@ function baseInit(bid){ //canvasの初期化
       ll_Canvas(ll);
     }
     if(xy[1] == 297) {
-      scale(1/2);             //縮小 denug
+      //scale(1/2);             //縮小 denug
     }
 // ctx.lineWidth = 12; //icon
   }

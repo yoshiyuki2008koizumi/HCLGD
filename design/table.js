@@ -9,9 +9,9 @@ const dbdBase = () => IDB.dbd.base;
 function onCellCommit(info, commit = true) { //入力セル確定callback
  // cMsg(`キー入力 ${JSON.stringify(info)}`);
   dsMode.val[info.pat][info.name] = info.val? info.val: "";   //値の更新
-  document.getElementById("saveBtn").disabled = false;        //保存ボタン表示
-  document.getElementById("saveBtn").textContent = "保存";
   if(info.name.endsWith("_i") & commit === true){
+    document.getElementById("saveBtn").disabled = false;        //保存ボタン表示
+    document.getElementById("saveBtn").textContent = "保存";
     dsMode.valProc(info.pat);  //入力データを修正、再計算
     if(info.name == "taper_i"){   //テーパなら後退角も修正要
       const td = getTd(info.pat, "sweep_pd");
@@ -184,10 +184,45 @@ function setup(ix,base, pat) {  //テーブル初期表示
     td.dataset[ds] = val;
     // if ("ds" in td.dataset) {   cMsg(td.dataset.ds);  }
   }
+  
+  let selectedTd = null;  //最後に選択したテーブル
+  function clickHandl(e){ //画面全体のクリックを拾うイベント
+    if(true){
+      if (e.target.tagName === "SELECT" || e.target.closest("select")) {
+        return;
+      }
+    }else{
+      if (e.target.closest("td")?.querySelector("select")) {
+        if (e.target.closest("select")) return;
+      }
+    }
+    const td = e.target.closest("td");  //クリックされた要素から最も近いtdを取得
+    if (td) { 
+      if(selectedTd !== td){
+        if (selectedTd) {
+          selectedTd.classList.remove("active");  // 前回選択されたtdのハイライトを解除
+        }
+        selectedTd = td;
+        if (selectedTd)   //tdがクリックされた場合
+//          selectedTd.classList.add("active"); // 選択されたtdをハイライト
+            setTimeout(() => {
+              selectedTd.classList.add("active");
+            }, 0);
+      }else{
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+        e.preventDefault(); // ← これ追加
+        //return; //同じセルがクリックされたら何もしない
+      }
+    }
+  }
+
   const tableDom = document.getElementById("dgnTable" + String(ix));  //DOM
   tableDom.innerHTML = "";  //クリアテーブル
   const block = dbdBase()[base][pat];        //dbVal.blocks[name];
   const table = document.createElement("table");  //table作成
+  table.addEventListener("click", clickHandl);
   table.className = "cell-block";
   table.dataset.block = pat;
   for (let i = 0; i < block.length; i += 2) {   //row

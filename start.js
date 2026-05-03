@@ -34,6 +34,28 @@ const upDbg = `
 */
 
 console.log("start.js")
+if(false){
+  document.addEventListener("mousedown", e => {
+    console.log("DOWN", e.target, document.activeElement);
+  }, true);
+
+  document.addEventListener("mouseup", e => {
+    console.log("UP", e.target, document.activeElement);
+  }, true);
+
+  document.addEventListener("click", e => {
+    console.log("CLICK", e.target, document.activeElement);
+  }, true);
+
+  document.addEventListener("change", e => {
+    console.log("CHANGE", e.target, e.target.value);
+  }, true);
+
+  document.addEventListener("focusout", e => {
+    console.log("FOCUSOUT", e.target);
+  }, true);
+}
+
 async function init(initDom = false) {
  cMsg(`start.init`);
 
@@ -66,7 +88,6 @@ async function init(initDom = false) {
   }
   
   cMsg(`Stest`);
-
 /*
 //  await rebuildDB();   // ← 今 or 将来 IndexedDB を触るなら必須
 

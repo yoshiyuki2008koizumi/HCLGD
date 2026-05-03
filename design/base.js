@@ -56,7 +56,7 @@ function sweep_pd(info){  //後退角
     case "0": //"後退角度指定":
       return false;
   }
-  cMsg (anglDeg)
+//  cMsg (anglDeg)
   table.setVal(info.pat,"sweep_i",anglDeg);
   return false;
 }
@@ -105,7 +105,7 @@ function setup_pd(pat, td, name, callback){ //setpuからプルダウン設定�
       pat: pat
     };
     const oval = data[pat][row][col]; //保存値無しなら更新しない
-    cMsg(oval);
+  //  cMsg(oval);
     if(oval !== "" )data[pat][row][col] = info.val;
 
     if(pdNemu[pdName].cvName !== undefined){
@@ -148,6 +148,9 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
     function reductionRatio(){  //縮小率
       let result = 1;
       let mw_span = dbdBase().val.base.mw.span_o;  //canvas縮小係数
+      if(Number.isNaN(mw_span)){
+        debugger;  cMsg(`縮小率計算失敗: mw_span undefined`);    
+      } 
   //cMsg(mw_span)
       for(let i = 0; ; i++){  //縮小設定
         if(mw_span <= A5Hp2[0])break;
@@ -163,42 +166,25 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
 
         if(pat === "vs")    //垂直尾翼なら合わせて水平尾翼を追記 
           MC2.draw(dbdBase().val[step].hs,1); //薄い黒
-
+//cMsg (`--aa`)
         MC2.draw(dbdBase().val[step][pat]);
         ll_mac(mac);  //MACを追記
       MC2.restore(); // ← 色・太さ・点線設定など全部元に戻る
     }
-  }
+  }//drawRLI
   function crLliP(step){   //翼線情報作成と描画
-   cMsg(` - ${step}`)
+//   cMsg(` - ${step}`)
     let list = [];      //片翼座標　系の原点は翼根前縁の下端
     MC2.ll_start(list,0,0,LInv);
     MC2.ll_start(list,span/2,tipDiff,LInv);
     MC2.ll_start(list,span/2,tipChord+tipDiff,LInv);
     MC2.ll_end(list,0,rootChord);
-cMsg(`YY ${list}`);
+//cMsg(`YY ${list}`);
     mac = aero.calcMAC(list); //MAC算出
     //dbdBase().val[step][pat].mac = mac;
     patVal.mac_o = mac.length;  //MAC長確定
     patVal.macDef_o = mac.def
-/*
-    const arg = {
-      span: span/2,
-      rootChord: rootChord,
-      tipChord: tipChord,
-      cg: 60,
-      tailArm: 120
-    };
-    const xmac = aero3.evaluateWing(arg); //MAC算出
-    mac.area = xmac.area;
-    mac.length = xmac.MAC;
-    mac.y = xmac.MAC_y;
-    mac.def = xmac.MAC_x;
-
-const t1 = aero3.calcMAC_taper(span, aria, Number(patVal.taper_i));
-cMsg(`t1 ${JSON.stringify(t1)}`);
-*/
-cMsg(`XXz ${step} ${mac.length}`);
+//cMsg(`XXz ${step} ${mac.length}`);
     if(pat != "body"){
       if(pat === "vs"){ //双垂直尾翼ならX座標[0]を移動
         const span = dbdBase().val.base.hs.span_o/2;
@@ -219,11 +205,17 @@ cMsg(`XXz ${step} ${mac.length}`);
     drawRLI(step);  //パーツ描画  
   }//crLliP
 
-   function rectProc(){  //矩形翼処理
- //cMsg(`rectProc`)
+  function rectProc(){  //矩形翼処理
+ cMsg(`rectProc ${pat}`);
     let rectFix = false;  //翼成立フラグ
-    //if(pat === "mw" && patVal.hspan_i === ""){   //MWなら翼面荷重処理
-    if(patVal.area_io === ""){   //参考面積なし
+    if(pat === "vs"){
+      function chord(){
+        if(val.hs.chord_i)return val.hs.chord_i;
+        return Math.sqrt(val.hs.area_o / val.hs.aspect_i);
+      }
+      table.setVal (pat, "chord_i", chord(), false);
+    }
+    if(patVal.area_io === ""){   //参考面積なし(初回起動)
       const l = dbdBase().val.base.mw.loading_i;
       const w = dbdBase().val.base.mw.weight_i;
       if(l * w){
@@ -231,28 +223,28 @@ cMsg(`XXz ${step} ${mac.length}`);
         aria = l * w * p;
         table.setVal (pat, "area_io", aria, false); //設定して
         if(pat === "hs" || pat === "vs"){
-          table.setVal (pat, "area_i", aria, false); //設定して
+          table.setVal (pat, "area_i", aria, false);
         }
         if(pat === "vs"){
           //taria /= 2;  //双垂直尾翼
-          table.setVal (pat, "chord_i",dspVal(dsMode.val["hs"]["rootChord_o"]), false);
+          //table.setVal (pat, "chord_i",Number(dspVal(dsMode.val["hs"]["rootChord_o"])), false);
         }
       }
     }
-    span = Number(patVal.hspan_i)*2;  //翼幅
-    chord = Number(patVal.chord_i);   //翼弦
+    span = Number(patVal.hspan_i)*2;
+    chord = Number(patVal.chord_i);
     patVal.tipDiff = tipDiff = 0;
-    if((aria = span*chord)){
+    if((aria = span*chord)){  //翼幅*翼弦で面積が出るなら
       table.setColor(pat,"hspan_i",cEnble);
       color("chord_i")
       table.setColor(pat,"chord_i",cEnble);
       rectFix = true;   //成立　翼幅*翼弦＝面積
     }else if((aria = Number(patVal.area_i))){ //面積指定
       table.setColor(pat, "area_i",cEnble);
-    }else if(pat === "mw"){   //MWなら翼面荷重処理
+    }else if(pat === "mw"){   //MWで
       const l = patVal.loading_i;
       const w = patVal.weight_i;
-      if(l * w){
+      if(l * w){  //荷重と重量があれば面積が出る
         table.setColor(pat,"loading_i",cEnble);
         table.setColor(pat,"weight_i",cEnble);
         aria = l * w * 100;
@@ -309,6 +301,10 @@ cMsg(`XXz ${step} ${mac.length}`);
     return rectFix;
   }//rectProc
   function taperProc(){ //テーパ翼処理
+ cMsg(`taperProc ${pat}`);
+    if(pat === "vs"){
+      //table.setVal (pat, "chord_i", val.hs.tipChord_o, false); //設定して
+    }
     const taper = Number(patVal.taper_i);   //テーパー
     //if(!taper){
     if(false){
@@ -317,22 +313,35 @@ cMsg(`XXz ${step} ${mac.length}`);
       patVal.tipDiff_o = chord*2;//0;
     }else{
       table.setColor(pat,"taper_i",cEnble);
-      rootChord = Number(patVal.rootChord_o)*2 / (taper + 1);
-      tipChord = tipChord * taper;
+      if(pat === "vs"){
+        //patVal.rootChord_o ;
+        rootChord = val.hs.tipChord_o;
+        tipChord = rootChord * taper;
+        tipDiff = (rootChord - tipChord) / 2;
+      }else{    
+        rootChord = Number(patVal.rootChord_o)*2 / (taper + 1);
+        tipChord = tipChord * taper;
+        tipDiff = rootChord*0.25 - tipChord*0.25;
+      }
       patVal.tipChord_o = tipChord;
       patVal.rootChord_o = rootChord;
-      tipDiff = rootChord*0.25 - tipChord*0.25;
       patVal.tipDiff_o = tipDiff;
-
+      patVal.span_o = patVal.area_o / ((rootChord + tipChord) * 0.5); //翼幅再計算
+      if(Number.isNaN(patVal.span_o)){
+        debugger;
+      }
     }
     return true;
   }//taperProc
   function sweepProc(){ //後退角翼処理
+ cMsg(`sweepProc ${pat}`);
+    if(pat === "vs"){
+      table.setVal (pat, "chord_i", val.hs.tipChord_o, false); //設定して
+    }
     sweep = Number(patVal.sweep_i);   //後退角
     if(!sweep){
       patVal.sweepDiff_o = 0;
     }else{
-cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDiff_o}`)
       table.setColor(pat,"sweep_i",cEnble);
       const rad = sweep * Math.PI / 180;
       tipDiff = Math.tan(rad) * patVal.span_o;
@@ -341,7 +350,7 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
       tipDiff += (patVal.rootChord_o - patVal.tipChord_o)* 0.25;
       patVal.tipDiff_o = tipDiff;
 
-cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDiff_o}`)
+ //cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDiff_o}`)
       //patVal.area_o = aria;
     }
     return true;
@@ -353,14 +362,15 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
       table.setColor(pat,name);
     }
   }
-  /*
-  MC2.selCanvasBcal("partP", 7);  //canvas初期化(非表示)
-  MC2.selCanvasBcal("workP", 2);
-  MC2.selCanvasBcal("viewP", 5);
-  */
-  MC2.selCanvasBcal("partP", 6);  //canvas初期化(非表示)
-  MC2.selCanvasBcal("workP", 2);
-  MC2.selCanvasBcal("viewP", 4);
+  if(false){  //矩形翼処理
+    MC2.selCanvasBcal("partP", 7);  //canvas初期化(非表示) 薄い
+    MC2.selCanvasBcal("workP", 2);
+    MC2.selCanvasBcal("viewP", 5);
+  }else{
+    MC2.selCanvasBcal("partP", 6);  //canvas初期化(非表示)  濃い
+    MC2.selCanvasBcal("workP", 2);
+    MC2.selCanvasBcal("viewP", 4);
+  }
   if(rectProc()){ //多重呼び出しで描画済みなので描画しない
     crLliP("rect");    //線データ作成
     if(taperProc()){ //テーパー翼処理
@@ -382,7 +392,6 @@ cMsg (`sweep ${sweep} ${patVal.rootChord_o} ${patVal.tipChord_o} ${patVal.tipDif
       cvmsg[pat].push(`　幅:　${v1}(${v2})`);
       cvmsg[pat].push(`　根弦:　${dspVal(patVal.rootChord_o)}　端弦:　${dspVal(patVal.tipChord_o)}`);
       cvmsg[pat].push(`　MAC:　${dspVal(patVal.mac_o)}　def:　${dspVal(patVal.macDef_o)}`);
-      cvmsg[pat].push(`　根弦:　${dspVal(patVal.rootChord_o)}　端弦:　${dspVal(patVal.tipChord_o)}`);
       cvmsg[pat].push(`　重心:　${dspVal(patVal.centerGgravity_i)}`);
     }
   MC2.sl_canvas(cvmsg[pat]);

@@ -10,7 +10,7 @@ function p2Vh(p){   //重心位置(%)から容積比を算出
 }
 
 function c2a(ll) {
-cMsg(`aa ${ll}`);
+//cMsg(`aa ${ll}`);
 
   function xyCnv(p) {
     return { x: p[1], y: p[0] };
@@ -52,7 +52,7 @@ cMsg(`aa ${ll}`);
       coords.push(xyCnv(ll[i]));
     }
   }
-cMsg(`bb ${JSON.stringify(coords)}`);
+//cMsg(`bb ${JSON.stringify(coords)}`);
   return { coords, def };
 }
 
@@ -203,11 +203,11 @@ function hsLH(p, mwa, hsa){ //水平尾翼モーメントアーム
 
   //aaaaa();
 
- cMsg (`主翼 ${mwa}`)
+// cMsg (`主翼 ${mwa}`)
   const mac_mw = calcMAC(mwa); //MAC算出
- cMsg (`水平尾翼 ${hsa}`)
+ // cMsg (`水平尾翼 ${hsa}`)
   const mac_hs = calcMAC(hsa); //MAC算出
- cMsg (`翼面積 mw-${mac_mw.area} hs-${mac_hs.area}  MAC mw-${mac_mw.length} hs-${mac_hs.length}`)
+ // cMsg (`翼面積 mw-${mac_mw.area} hs-${mac_hs.area}  MAC mw-${mac_mw.length} hs-${mac_hs.length}`)
   const Vh = p2Vh(p);
  //cMsg (`${p}% = ${Vh}`)
   const n = calcTailMomentArm(Vh, mac_mw, mac_hs);
