@@ -184,7 +184,7 @@ function setup(ix,base, pat) {  //テーブル初期表示
     td.dataset[ds] = val;
     // if ("ds" in td.dataset) {   cMsg(td.dataset.ds);  }
   }
-  
+  /*
   let selectedTd = null;  //最後に選択したテーブル
   function clickHandl(e){ //画面全体のクリックを拾うイベント
     if(true){
@@ -217,12 +217,13 @@ function setup(ix,base, pat) {  //テーブル初期表示
       }
     }
   }
+  */
 
   const tableDom = document.getElementById("dgnTable" + String(ix));  //DOM
   tableDom.innerHTML = "";  //クリアテーブル
   const block = dbdBase()[base][pat];        //dbVal.blocks[name];
   const table = document.createElement("table");  //table作成
-  table.addEventListener("click", clickHandl);
+//  table.addEventListener("click", clickHandl);
   table.className = "cell-block";
   table.dataset.block = pat;
   for (let i = 0; i < block.length; i += 2) {   //row

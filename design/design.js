@@ -14,9 +14,18 @@ const dbdBase = () => IDB.dbd.base;
 export let mode = {};   //mode
 export let dsMode = {}; //設計モード呼び出し
 export let mName = "";  //table名
-/* 5/1
+
 let selectedTd = null;  //最後に選択したテーブル
 function clickHandl(e){ //画面全体のクリックを拾うイベント
+    if(true){
+      if (e.target.tagName === "SELECT" || e.target.closest("select")) {
+        return;
+      }
+    }else{
+      if (e.target.closest("td")?.querySelector("select")) {
+        if (e.target.closest("select")) return;
+      }
+    }
   const td = e.target.closest("td");  //クリックされた要素から最も近いtdを取得
   if (td) { 
     if(selectedTd !== td){
@@ -35,7 +44,7 @@ function clickHandl(e){ //画面全体のクリックを拾うイベント
     }
   }
 }
-*/
+
 const ddDomTable = {
   base:    { oder: ["mw", "hs", "vs"], aria: [0,1,2], tbl: [0,1,2], canvas: [0,1,2] },
   modif:   { oder: ["mw", "hs", "vs"], aria: [0,1,2], tbl: [0,1,2], canvas: [0,1,1] },
@@ -182,7 +191,7 @@ function init(initDom = false) {  //初期起動
     setDomEvent("addNameBtn","click", addNameBtn);
     setDomEvent("mdisp","change", mdispChange);
     setDomEvent("baseEndBtn","click", baseEnd);
-//    document.addEventListener("click", clickHandl); //画面全体のクリックを拾うイベント登録  tableだけに修正5/1
+    document.addEventListener("click", clickHandl); //画面全体のクリックを拾うイベント登録  tableだけに修正5/1
     setDomEvent("tblDelBtn","click", clickTblDel);
     setDomEvent("tblLeftBtn","click", clickTblLeft);
     setDomEvent("tblRigthBtn","click", clickTblRigth);
