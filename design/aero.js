@@ -10,7 +10,7 @@ function p2Vh(p){   //重心位置(%)から容積比を算出
 }
 
 function c2a(ll){ //座標変換　canvasー＞aero
-cMsg(`aa2 ${ll}`);
+//cMsg(`aa2 ${ll}`);
   function xyCnv(p) {
     return { x: p[1], y: p[0] };
   }
@@ -106,7 +106,7 @@ cMsg(`aa ${ll}`);
   }
     */
  //  cMsg (` 座標 ${alla} `)
-cMsg(`bb ${JSON.stringify(coords)}`);
+//cMsg(`bb ${JSON.stringify(coords)}`);
   return { coords, def };
 }
 

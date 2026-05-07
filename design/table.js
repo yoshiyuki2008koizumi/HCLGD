@@ -138,7 +138,7 @@ const nameTbl = {
           pat: pat
         };
         //BASE.sweep_pd(dbdBase().base[pat][Number(td.dataset.row) + 2][3]);
-        BASE.sweep_pd(info);
+//5/4        BASE.sweep_pd(info);
         //return;
       }
       onCellCommit({
@@ -169,7 +169,7 @@ function setVal(pat, name, val, commit = true) { //テーブル変数(含むarra
   }
   const td = getTd(pat, name);
   if (td) {
-    td.textContent = (val === "" || val == null)? "": val.toFixed(1).replace(/\.0$/, '');
+    td.textContent = (val === "" || val == null)? "": Number(val).toFixed(1).replace(/\.0$/, '');
   }
   onCellCommit({ name: name, val: val, pat: pat,}, commit);
 }

@@ -285,7 +285,6 @@ function setCanvas(){   //全体表示
     MC2.sl_canvas(BASE.cvmsg.vs,0,800);
   }
 
-  MC2.selCanvasBcal("viewA", 4);
   MC2.selCanvasBcal("partA", 7);  //canvas初期化(非表示)
   MC2.selCanvasBcal("workA", 2);
   MC2.selCanvasBcal("viewA", 5);

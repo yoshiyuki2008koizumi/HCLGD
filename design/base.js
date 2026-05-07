@@ -176,6 +176,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
     }
   }//drawRLI
   function crLliP(step){   //翼線情報作成と描画
+    let macOffset;
 //   cMsg(` - ${step}`)
     let list = [];      //片翼座標　系の原点は翼根前縁の下端
     MC2.ll_start(list,0,0,LInv);
@@ -185,25 +186,31 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
 //cMsg(`YY ${list}`);
     mac = aero.calcMAC(list); //MAC算出
     //dbdBase().val[step][pat].mac = mac;
-    patVal.mac_o = mac.length;  //MAC長確定
-    patVal.macDef_o = mac.def
+    patVal.mac = mac;  //MAC保存
 //cMsg(`XXz ${step} ${mac.length}`);
     if(pat != "body"){
       if(pat === "vs"){ //双垂直尾翼ならX座標[0]を移動
         const span = dbdBase().val.base.hs.span_o/2;
-        const chord = dbdBase().val.base.hs.rootChord_o;
+        const diff = dbdBase().val.base.hs.tipDiff_o;  // tipDiff_o
+
         list.forEach(ll => {       //各X座標の移動
           ll[0] += span;
+          ll[1] += diff;
         });
+        mac = dbdBase().val.base.hs.mac;
       }
-      const macOffset = mac.length / 4 + mac.def
+      macOffset = mac.length / 4 + mac.def
+        
       MC2.ll_mOrg(list,0,-macOffset); //オリジン座標をMACの1/4に移動
     }else{
         //未作成
     }
 
     dbdBase().val[step] ??= {}; //翼線情報の保存
-    dbdBase().val[step][pat] = list;
+    dbdBase().val[step][pat] = structuredClone(list);
+    const xx = IDB.dbd.base.val.rect.mw;
+    const xx1 = IDB.dbd.base.val.taper.mw;
+    const xx2 = IDB.dbd.base.val.sweep.mw;
 
     drawRLI(step);  //パーツ描画  
   }//crLliP
@@ -216,7 +223,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
         if(val.hs.chord_i)return val.hs.chord_i;
         return Math.sqrt(val.hs.area_o / val.hs.aspect_i);
       }
-      table.setVal (pat, "chord_i", chord(), false);
+      //table.setVal (pat, "chord_i", chord(), false);
     }
     if(patVal.area_io === ""){   //参考面積なし(初回起動)
       const l = dbdBase().val.base.mw.loading_i;
@@ -236,7 +243,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
     }
     span = Number(patVal.hspan_i)*2;
     chord = Number(patVal.chord_i);
-    patVal.tipDiff = tipDiff = 0;
+    patVal.tipDiff_o = tipDiff = 0;
     if((aria = span*chord)){  //翼幅*翼弦で面積が出るなら
       table.setColor(pat,"hspan_i",cEnble);
       color("chord_i")
@@ -329,7 +336,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
       patVal.tipChord_o = tipChord;
       patVal.rootChord_o = rootChord;
       patVal.tipDiff_o = tipDiff;
-      patVal.span_o = patVal.area_o / ((rootChord + tipChord) * 0.5); //翼幅再計算
+      //patVal.span_o = patVal.area_o / ((rootChord + tipChord) * 0.5); //翼幅再計算
       if(Number.isNaN(patVal.span_o)){
         debugger;
       }
@@ -339,7 +346,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
   function sweepProc(){ //後退角翼処理
  cMsg(`sweepProc ${pat}`);
     if(pat === "vs"){
-      table.setVal (pat, "chord_i", val.hs.tipChord_o, false); //設定して
+//5/7      table.setVal (pat, "chord_i", val.hs.tipChord_o, false); //設定して
     }
     sweep = Number(patVal.sweep_i);   //後退角
     if(!sweep){
@@ -394,13 +401,15 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
       v1 = v2/2;
       cvmsg[pat].push(`　幅:　${v1}(${v2})`);
       cvmsg[pat].push(`　根弦:　${dspVal(patVal.rootChord_o)}　端弦:　${dspVal(patVal.tipChord_o)}`);
-      cvmsg[pat].push(`　MAC:　${dspVal(patVal.mac_o)}　def:　${dspVal(patVal.macDef_o)}`);
+      cvmsg[pat].push(`　MAC:　${dspVal(patVal.mac.macOffset_o)}　def:　${dspVal(patVal.mac.def)}`);
       cvmsg[pat].push(`　重心:　${dspVal(patVal.centerGgravity_i)}`);
     }
   MC2.sl_canvas(cvmsg[pat]);
 
   parts.setCanvas();  //全体canvasの表示
 }//valProc
+
+import { BD } from "./baseDesign.js";
 
 function init(){  //初期起動
   data.order.forEach((pat,ix) => {  //Table作成 
@@ -412,6 +421,8 @@ function init(){  //初期起動
     valProc(pat)
   });
   //parts.setCanvas();  //全体の表示
+
+  BD.proc();  //baseDesignの処理 debug用
 }
 
 export const BASE = {

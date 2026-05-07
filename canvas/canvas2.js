@@ -141,6 +141,10 @@ function selCanvasBcal(id,bcol = null){  //線の色指定付、書き込み開�
   }
   return dom; //canvas(DOM)ではない場合はnull
 }
+function idCheck(id){  //canvasIDチェック
+  return canvas.id.includes(id);
+}//idCheck
+
 //up Level line
 function getcX(xy) { //座標縦横変換
   //if (!d270) return xy[0];
