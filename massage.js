@@ -89,7 +89,8 @@ export function onerror (message, source, lineno, colno, error) {  //window.oner
     (error ? `Stack   : ${error.stack}\n` : "");
 //console.error(msg);
   showError(msg);  // グローバル関数を呼ぶ
-  return true;  // 既定のアラートは出さない（アプリを止めない）
+  // true;  // 既定のアラートは出さない（アプリを止めない）
+  return false;  // 既定のアラートは出さない（アプリを止めない）
 };
 
 export function onunhandledrejection(event) { //Promise の unhandled エラー ----
@@ -101,7 +102,8 @@ export function onunhandledrejection(event) { //Promise の unhandled エラー 
     (err && err.stack ? `Stack   :\n${err.stack}\n` : "");
 //console.error(msg);
   showError(msg);
-  return true;
+  //return true;
+  return false;
 };
 
 export function formatDateLocal(date = new Date()){  //時刻の文字列変換
@@ -114,3 +116,74 @@ export function formatDateLocal(date = new Date()){  //時刻の文字列変換
   return `${y}-${m}-${d} ${h}:${min}`;
 }
 //end of file
+
+//① addEventListener("error") これは重要です。
+window.addEventListener("error", (event) => {
+  const target = event.target;
+  // JS実行エラー
+  if (event.error) {
+    showError(
+      "⚠ addEventListener error\n" +
+      `Message : ${event.message}\n` +
+      `File    : ${event.filename}\n` +
+      `Line    : ${event.lineno}\n`
+    );
+    return;
+  }
+  // resource load error
+  if (target) {
+    const tag = target.tagName || "";
+    if (tag === "SCRIPT" || tag === "LINK" || tag === "IMG") {
+      showError(
+        "⚠ Resource Load Error\n" +
+        `Tag : ${tag}\n` +
+        `URL : ${target.src || target.href}\n`
+      );
+    }
+  }
+
+}, true);
+
+/* 今は②③④は不要
+//② rejectionhandled これは少しマニアック。 かなり特殊。普通は不要。
+window.addEventListener("rejectionhandled", (event) => {
+  showError(
+    "⚠ rejectionhandled\n" +
+    `${event.reason}`
+  );
+
+});
+
+//③ fetch wrapper これはかなり実用的。 コード全体へ影響。 今はまだ早い。
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  try {
+    const res = await originalFetch(...args);
+    if (!res.ok) {
+      showError(
+        "⚠ fetch error\n" +
+        `Status : ${res.status}\n` +
+        `URL    : ${args[0]}\n`
+      );
+    }
+    return res;
+  } catch(err) {
+    showError(
+      "⚠ fetch exception\n" +
+      `${err.stack || err}`
+    );
+    throw err;
+  }
+};
+
+//④ console.error hook かなり強力。 
+// Consoleエラーを横取り。強力ですが、理解不足状態で入れると危険。無限ループもしやすい。
+const originalError = console.error;
+console.error = (...args) => {
+  showError(
+    "⚠ console.error\n" +
+    args.join(" ")
+  );
+  originalError(...args);
+};
+*/

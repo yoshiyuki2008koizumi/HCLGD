@@ -287,7 +287,9 @@ function baseEnd(){
 }
 
 function mdispChange2(value){ //モジュール付与時切替処理
-  mName = value;
+  if(value != "all"){
+    mName = value;
+  }
   const  all = (value === "all")? "block": "none";
   for(let i = 0; i < 4; i++){  // 全て非表示して  
  //cMsg (`xx ${i}`)

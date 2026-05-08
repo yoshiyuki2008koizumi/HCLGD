@@ -208,9 +208,9 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
 
     dbdBase().val[step] ??= {}; //翼線情報の保存
     dbdBase().val[step][pat] = structuredClone(list);
-    const xx = IDB.dbd.base.val.rect.mw;
-    const xx1 = IDB.dbd.base.val.taper.mw;
-    const xx2 = IDB.dbd.base.val.sweep.mw;
+//    const xx = IDB.dbd.base.val.rect.mw;
+//    const xx1 = IDB.dbd.base.val.taper.mw;
+//    const xx2 = IDB.dbd.base.val.sweep.mw;
 
     drawRLI(step);  //パーツ描画  
   }//crLliP

@@ -281,8 +281,8 @@ function setCanvas(){   //全体表示
     }
     const m = ["mw","hs","vs"];
     MC2.sl_canvas(BASE.cvmsg.mw);
-    MC2.sl_canvas(BASE.cvmsg.hs,0,600);
-    MC2.sl_canvas(BASE.cvmsg.vs,0,800);
+    MC2.sl_canvas(BASE.cvmsg.hs,0,500);
+    MC2.sl_canvas(BASE.cvmsg.vs,0,700);
   }
 
   MC2.selCanvasBcal("partA", 7);  //canvas初期化(非表示)
