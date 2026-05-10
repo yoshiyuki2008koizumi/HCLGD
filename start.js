@@ -4,6 +4,7 @@ import { cp } from "./childePage.js";
 import { parts } from "./parts/parts.js";
 //import { anDesign } from "./design/acNumDesign_2.js"; //空力計算サンプル
 import { IDB } from "./db/indexdDB.js";
+import { MC3 } from "../canvas/canvas3.js";
 
 
 const upDbg = `
@@ -34,6 +35,7 @@ const upDbg = `
 */
 
 console.log("start.js")
+
 if(false){
   document.addEventListener("mousedown", e => {
     console.log("DOWN", e.target, document.activeElement);
@@ -85,6 +87,7 @@ async function init(initDom = false) {
       errDisp.style.display = "none";   //クリックで非表示(エラー時表示し)
     });
 */
+
   }
   
   cMsg(`Stest`);
@@ -143,6 +146,7 @@ window.addEventListener("DOMContentLoaded", async () => {
  // anDesign.init(); 
   parts.dbgBtn();
   db_dbRead();
+  MC3.test();   //debug
 
   cMsg(`初期　読み出し完了`);
  

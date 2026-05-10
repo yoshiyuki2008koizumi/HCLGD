@@ -136,6 +136,9 @@ cMsg(`rectProc ${part}`);
   span = Number(apdI.hspan_i)*2;
   chord = Number(apdI.chord_i);
   apdO.tipDiff_o = 0;
+  if(span*chord == 0 & part === "vs"){
+    chord = apd.hs.tipChord_o;
+  }
   if((aria = span*chord)){  //翼幅*翼弦で面積が出るなら
     table.setColor(part,"hspan_i",cEnble);
     color("chord_i")
@@ -157,8 +160,9 @@ cMsg(`rectProc ${part}`);
       if(Number(apdI.hspan_i)){
         chord = aria / span;
         table.setColor(part,"hspan_i",cEnble);
-      }
-      if(Number(apdI.chord_i)){
+//      }
+//      if(Number(apdI.chord_i)){
+      }else{
         span = aria / chord;
         table.setColor(part,"chord_i",cEnble);
       }
@@ -194,20 +198,17 @@ cMsg(`rectProc ${part}`);
         table.setColor(part,"sweep_i",cEnble);
       }
     }
-cMsg (` A span-${apdO.span_o} area-${apdO.area_o} cord-${chord}`)    
     if(base === "rect" & part === "vs") {
       rootChord = tipChord = apd.hs.area_o / apd.hs.span_o;
     }else{
-      rootChord = chord*2 / (taper + 1);
+      rootChord = (part === "vs")? chord: chord*2 / (taper + 1);
       tipChord = rootChord * taper;
     }
-cMsg (` B root-${rootChord} tip-${tipChord}`)    
  
     apdO.tipChord_o = tipChord;
     apdO.rootChord_o = rootChord;
     tipDiff = (rootChord - tipChord) * 0.25;
     apdO.span_o = apdO.area_o / ((rootChord + tipChord) * 0.5); //翼幅再計算
-cMsg (` X span-${apdO.span_o} area-${apdO.area_o}`)    
     if(Number.isNaN(apdO.span_o)){
       debugger;
     }

@@ -11,6 +11,7 @@ import { aero }  from "../design/aero.js";
 //import { aero3 } from "../design/aero3.js";
 import { IDB } from "../db/indexdDB.js";
 const dbdBase = () => IDB.dbd.base;
+import { MC3 } from "../canvas/canvas3.js";
 
 const cvmsg = {}; //カンヴァス表示メッセージ
 const patname = {mw: "主翼", hs: "水平尾翼", vs: "垂直尾翼"}
@@ -404,7 +405,7 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
       cvmsg[pat].push(`　MAC:　${dspVal(patVal.mac.macOffset_o)}　def:　${dspVal(patVal.mac.def)}`);
       cvmsg[pat].push(`　重心:　${dspVal(patVal.centerGgravity_i)}`);
     }
-  MC2.sl_canvas(cvmsg[pat]);
+  MC3.sl_canvas(cvmsg[pat]);
 
   parts.setCanvas();  //全体canvasの表示
 }//valProc

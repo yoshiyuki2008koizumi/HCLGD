@@ -5,6 +5,7 @@ import { MC2, LInv, LStart, LEnd, LCol,} from "../canvas/canvas2.js";
 import { aero } from "../design/aero.js";
 import { IDB } from "../db/indexdDB.js";
 import { BASE } from "../design/base.js";
+import { MC3} from "../canvas/canvas3.js";
 
 const dbdBase = () => IDB.dbd.base;
 
@@ -280,9 +281,9 @@ function setCanvas(){   //全体表示
       }
     }
     const m = ["mw","hs","vs"];
-    MC2.sl_canvas(BASE.cvmsg.mw);
-    MC2.sl_canvas(BASE.cvmsg.hs,0,500);
-    MC2.sl_canvas(BASE.cvmsg.vs,0,700);
+    MC3.sl_canvas(BASE.cvmsg.mw);
+    MC3.sl_canvas(BASE.cvmsg.hs,0,500);
+    MC3.sl_canvas(BASE.cvmsg.vs,0,700);
   }
 
   MC2.selCanvasBcal("partA", 7);  //canvas初期化(非表示)

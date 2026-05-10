@@ -1,4 +1,5 @@
 //canvas2.js
+import { MC3 } from "./canvas3.js"; //debug
 
 //常数
  //用紙サイズ
@@ -44,13 +45,33 @@ const canvasCenter = {};  //canvas center P.A: [x,y]
 
 //変数
 let canvas =  null; //canvas
-let ctx =  null;    //canvas コンテキスト
+let ctx =  {};    //canvas コンテキスト
 let ctx_xy = [];    //canvasXYサイズ
 const dpi = 96;
 const ds = (dpi / 25.4);
 const mmToPx = mm => mm * ds; //ｍｍをピクセルに変換 1行アロー関数
 let d270 = false;  //270度canvasの向き
 let cReduction = 1;
+let ulxy = {};  //canvs書き込みエリア
+
+function setUlxyS(xy){//座標の保存
+  return
+  const p = ulxy[ctx.canvas.id];
+  if(p.u[0] > p[0])p.u[0] = xy[0];  //ux
+  if(p.u[1] > p[1])p.u[1] = xy[1];  //uy
+  if(p.l[0] < p[0])p.l[0] = xy[0];  //lx
+  if(p.l[1] < p[1])p.l[1] = xy[1];  //ly
+}
+function setUlxy(s, e = null){  //通常座標
+  setUlxyS(s);
+  if(e !== null)
+    setUlxyS(e);
+}
+function setUlxyI(s, e = null){ //　反転座標　x*-1
+  setUlxyS([s[0]*-1,s[1]]);
+  if(e !== null)
+    setUlxyS([e[0]*-1,e[1]]);
+}
 
 function ll_start(list, x, y, inv = 0){ //線情報の開始
   const info = (inv & LInv)? LStart|LInv: LStart;
@@ -97,7 +118,7 @@ function scale(x, y = x){  //canvasの縮尺設定
   ctx.scale(x, y); //縮小
 }
 function setOrg(xy){   //canvas原点の設定　Pixel単位
- ctx.setTransform(1,0,0,1,0,0); //原点の初期化
+  ctx.setTransform(1,0,0,1,0,0); //原点の初期化
  //cMsg (`${mmToPx(xy[0])} ${ mmToPx(xy[1])}`);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.translate(mmToPx(xy[0]), mmToPx(xy[1]));
@@ -119,7 +140,7 @@ function selCanvas(id, info = null){ //canvasIDチェック。info=canvasサイ�
     canvas = dom;
     ctx = canvas.getContext("2d")
     ctx.strokeStyle = colorTble[0];   //ディフォルト線色
-  if(info){
+    if(info){
       const i = canvasSize.findIndex(row => row[0] === info);
       const size = (i != -1)?  canvasSize[i]: canvasSize[0];
       canvas.width = Math.round(mmToPx(size[1]));
@@ -137,6 +158,7 @@ function selCanvasBcal(id,bcol = null){  //線の色指定付、書き込み開�
     if(bcol !== null){
       ctx.strokeStyle = colorTble[bcol];
       clear();
+      ulxy[id] = {u: [0,0], l:[0,0]};
     }
   }
   return dom; //canvas(DOM)ではない場合はnull
@@ -174,9 +196,11 @@ function l_line(s, e){
 //cMsg(`ll ${s} ${e}`)
   linePath(getcX(s),getcY(s));
   lineStroke(getcX(e),getcY(e));
+  setUlxy(s,e);
   if(s[2] & LInv){
     linePath(getcX(s)*-1,getcY(s));
     lineStroke(getcX(e)*-1,getcY(e));
+    setUlxyI(s,e);
   }
 }//l_line
 function l_movOrg(xy, col = null){   //canvas原点の設定　Pixel単位
@@ -198,6 +222,7 @@ function ll_Canvas(list, col = null){ //線情報のCanvas書き込み（左右�
         break;
       case LMorg:
         l_movOrg(list[i])
+        ulxy[ctx.canvas.id] = {u: [0,0], l:[0,0]};
         break;
       case LCol:
         if(col === null)
@@ -253,9 +278,12 @@ function draw(ll, col = null, cid = null){  //canvasに線を引く
 
 
 function baseInit(bid){ //canvasの初期化
+  MC3.baseInit(bid); return;
+  
   function setBoxAcl(xy, y, box){
     if(box){
       const canvasB = document.getElementById(box);
+      ulxy[box] = {u: [0,0], l:[0,0]};
       canvasB.style.height = canvas.height+"px"
     }
     setOrg([xy[0]/2, y]);
@@ -288,9 +316,12 @@ function baseInit(bid){ //canvasの初期化
 
 export const MC2 = {
     baseInit, selCanvas, selCanvasBcal, clear, setOrg, movOrg, line, drawAll, draw,
-    ll_start, ll_end, ll_mOrg, ll_Canvas, sl_canvas, save, restore, scale
+    ll_start, ll_end, ll_mOrg, ll_Canvas, sl_canvas, save, restore, scale,
+
+//    get ctx() {return ctx},
+    set ctx(val) {ctx = val},
+    set canvas(val) {canvas = val},
     
-    //get ctx() {return ctx},
     //set cReduction(val) { cReduction = val; }, 
     //get cReduction() { return cReduction; }
 
