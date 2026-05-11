@@ -405,7 +405,8 @@ function valProc(pat = null){  //基本設計数値処理(入力値変更)　起
       cvmsg[pat].push(`　MAC:　${dspVal(patVal.mac.macOffset_o)}　def:　${dspVal(patVal.mac.def)}`);
       cvmsg[pat].push(`　重心:　${dspVal(patVal.centerGgravity_i)}`);
     }
-  MC3.sl_canvas(cvmsg[pat]);
+  MC2.sl_canvas(cvmsg[pat]);
+  //MC3.sl_canvas(cvmsg[pat]);
 
   parts.setCanvas();  //全体canvasの表示
 }//valProc

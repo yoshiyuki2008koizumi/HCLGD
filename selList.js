@@ -18,8 +18,8 @@ const chtml = `
   </select>　
   <button id="selectBtn" >選択</button>
   <button id="delNameBtn" >削除</button><br>
-  <select id="acList" size="10"></select><br>
 
+  <div id="acList" class="listBox"></div>
 
   
 </div>
@@ -27,6 +27,7 @@ const chtml = `
 `;
 
 let nameSort = false;   //ソート指定
+let selectName = "";
 
 function init(initDom = false) {  //子ページの表示
 cMsg(`selList`)
@@ -76,12 +77,28 @@ function dspApList() {  //機体リストの表示
 
   const maxLen = Math.max(...list.map(t => t.name.length), 0);
   const columnPos = maxLen + 3; //名前部のカラムをそろえる幅
-
+/*
   const baseOpt = document.createElement("option");
   baseOpt.value = "prototype";
   baseOpt.textContent = "prototype";
   sel.appendChild(baseOpt); //先頭newBase追加
+*/
+  const baseRow = document.createElement("div");
+  baseRow.className = "listRow";
+  baseRow.dataset.value = "prototype";
+  baseRow.textContent = "prototype";
+  baseRow.addEventListener("click", ()=>{
+    selectName = "prototype";
+    document
+      .querySelectorAll(".listRowSelect")
+      .forEach(e =>
+        e.classList.remove("listRowSelect"));
 
+    baseRow.classList.add("listRowSelect");
+  });
+  sel.appendChild(baseRow);
+
+  /*
   list.forEach(t => {       //Sort結果の追加
     const opt = document.createElement("option");
     opt.value = t.name;
@@ -89,12 +106,31 @@ function dspApList() {  //機体リストの表示
       t.name.padEnd(columnPos, "\u00A0") + (t.created || "");
     sel.appendChild(opt);
   });
+  */
+  list.forEach(t => {       //Sort結果の追加
+    const row = document.createElement("div");
+    row.className = "listRow";
+    row.dataset.value = t.name;
+    row.textContent =
+      t.name.padEnd(columnPos, "\u00A0") + (t.created || "");
+    row.addEventListener("click", () => {
+      selectName = t.name;
+      document
+        .querySelectorAll(".listRowSelect")
+        .forEach(e =>
+          e.classList.remove("listRowSelect"));
+      row.classList.add("listRowSelect");
+    });
+    sel.appendChild(row);
+  });  
+
 }
 
 async function delApList() {   //機体の削除
 cMsg(`delapList`);
   const sel=document.getElementById("acList");
-  const name = sel.value;
+  //const name = sel.value;
+  const name = selectName;
   if(!name) return;
   if(name==="dataOrg") { alert("dataOrgは削除できません"); return; }
 //  if(!confirm(name+" を削除しますか？")) return;
@@ -112,7 +148,8 @@ cMsg(`del sheet ${name}`)
 }
 
 function dispSelect(event){ //リスト表示切替
-  const sel = (event.baseList.value === "name")? true: false;
+  //const sel = (event.baseList.value === "name")? true: false;
+  const sel = (event.target.value === "name") ? true : false;
   setNameSort(sel)
 }
 
@@ -143,10 +180,18 @@ cMsg(`target:  ${dcName}`);
     db.req({req: "design", apName: dcName});
   }
 }
+/*
 function DCButtan(){ //ダブルクリックボタン
   const sel=document.getElementById("acList");
   const name = sel.value;
 cMsg (`DCButtan ${name}`)
+  DCSelect(name);  
+}
+*/
+function DCButtan(){ //ダブルクリックボタン
+  cMsg(`selectName=${selectName}`);
+  const name = selectName;
+  cMsg (`DCButtan ${name}`);
   DCSelect(name);  
 }
 async function apListDC(event) {  //機体の追加　ダブルクリック処理

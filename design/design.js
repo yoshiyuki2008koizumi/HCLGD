@@ -7,6 +7,8 @@ import { EMSbase } from "./base.js";
 import { MC2, A5Hp2 } from "../canvas/canvas2.js";
 import { table } from "./table.js";
 import { IDB } from "../db/indexdDB.js";
+import { MC3 } from "../canvas/canvas3.js"; //debug
+
 const dbdBase = () => IDB.dbd.base;
 
 //import { anDesign } from "../design/acNumDesign_2.js"; //空力計算サンプル
@@ -197,7 +199,7 @@ function init(initDom = false) {  //初期起動
     setDomEvent("tblRigthBtn","click", clickTblRigth);
     setDomEvent("saveBtn","click", saveCurrentTarget);
 
-    MC2.baseInit()
+    MC3.baseInit()
     if(true){
       const sel = document.getElementById("mdisp");
 

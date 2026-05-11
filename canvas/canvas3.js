@@ -45,7 +45,7 @@ let ctx;    //canvasd270
 const dpi = 96;   //解像度
 const ds = (dpi / 25.4);
 const mmToPx = mm => mm * ds; //ｍｍをピクセルに変換 1行アロー関数
-const canvasCenter = {};  //canvas center P.A: [x,y]　右上座標算出用に保存　pushしてもどてpopすれば不要かも
+//const canvasCenter = {};  //canvas center P.A: [x,y]　右上座標算出用に保存　pushしてもどてpopすれば不要かも
 let cReduction = 1; //使ってない。削減なので、縮小係数のように見える。5/10
 let d270 = false;  //270度canvasの向き　縦置を横置にする場合の座標変換？
 
@@ -138,7 +138,7 @@ function sl_canvas(strl, x = 0, y = 0){ //文字列行リストを表示する
 
   ctx.font = "16px sans-serif";
   strl.forEach((line, i) => {
-    ctx.fillText(line, x-mmToPx(canvasCenter[type][0]), y-mmToPx(canvasCenter[type][1]) + (i+1) * lineHeight);
+    ctx.fillText(line, x-mmToPx(MC2.canvasCenter[type][0]), y-mmToPx(MC2.canvasCenter[type][1]) + (i+1) * lineHeight);
   });
 }// strl_canvas
 
@@ -166,7 +166,7 @@ function selCanvas(id, sInfo = null){ //canvasIDチェック。info=canvasサイ
       canvasMap[id] = ctx;
     }else
       return canvas; //idはcanvasでは無い
-  }else ctx = canvasMap[id].ctx;
+  }else ctx = canvasMap[id];
   MC2.ctx = ctx;
   MC2.canvas = ctx.canvas;
 //  cIdLast = ctx.canvas.at(-1);   //最後の文字取り出し
@@ -198,7 +198,7 @@ function setBoxAcl(nxy, my, box){ //センターラインと重ね枠サイス�
   setOrg([xy[0]/2, y]); //座標の原点
   if(box){
     const last = ctx.canvas.id.at(-1);   //最後の文字取り出し
-    canvasCenter[last] = [xy[0]/2, y];  //センター値保存
+    MC2.canvasCenter[last] = [xy[0]/2, y];  //センター値保存
     const ll = [
       [2,0,LCol],
       [0,-y,LStart],[0,xy[1]-y,LEnd], //センタライン
@@ -236,7 +236,7 @@ function test(){  // debug
 
 export const MC3 ={
   test,
-  baseInit,sl_canvas,
+  baseInit,
 }
 //import { MC3 } from "./canvas3.js";
 //end of file 

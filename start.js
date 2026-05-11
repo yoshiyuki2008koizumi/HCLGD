@@ -1,10 +1,13 @@
 // start.js
+//  document.body.innerHTML = "HTML OK start.js";
+
+//import { XMC2 } from "./canvas/xcanvas2.js";
 import { db, } from "./db/dataBase.js";
 import { cp } from "./childePage.js";
 import { parts } from "./parts/parts.js";
 //import { anDesign } from "./design/acNumDesign_2.js"; //空力計算サンプル
 import { IDB } from "./db/indexdDB.js";
-import { MC3 } from "../canvas/canvas3.js";
+import { MC3 } from "./canvas/canvas3.js";
 
 
 const upDbg = `
@@ -22,17 +25,6 @@ const upDbg = `
 <button id="btn11Start" ></button>
 <button id="btnEndEtc2" ></button>
 `;
-/*
-<button id="btn1Start" style="display:none;></button>
-<button id="btn2Start" style="display:none;></button>
-<button id="btn3Start" style="display:none;></button>
-<button id="btn4Start" style="display:none;></button>
-<button id="btn5Start" style="display:none;></button>
-<button id="btn6Start" style="display:none;></button>
-<button id="btn7Start" style="display:none;></button>
-<button id="btn8Start" style="display:none;></button>
-<button id="btnEndEtc2" style="display:none;>endEtc2</button>
-*/
 
 console.log("start.js")
 
@@ -67,42 +59,9 @@ async function init(initDom = false) {
 
     setDomEvent("btn1Start","click", () => cp.init(), "初期選択");
 
-/*
-    setDomEvent("btn2Start","click", () => switchPage(htmlDesign_main));
-    setDomEvent("btn3Start","click", () => switchPage(htmlDesignChange));
-    setDomEvent("btn4Start","click", () => switchPage(htmlDesign_ext));
-    setDomEvent("btn5Start","click", () => switchPage(''));
-    
-    setDomEvent("btn6Start","click", iTest);
-    setDomEvent("btn7Start","click", iTest1);
-    setDomEvent("btn8Start","click", iTest2);
-
-    const errDisp = document.getElementById("errDisp"); //エラー非表示
-    errDisp.innerHTML = errMsgHtml;
-    errDisp.style.display = "none";
-
-    const errArea = document.getElementById("errorBox");  //エラー表示
-    document.getElementById("btnClearErr").addEventListener("click", () => {
-      errArea.textContent = ""; //エラー表示を消す
-      errDisp.style.display = "none";   //クリックで非表示(エラー時表示し)
-    });
-*/
-
   }
   
   cMsg(`Stest`);
-/*
-//  await rebuildDB();   // ← 今 or 将来 IndexedDB を触るなら必須
-
-  document.getElementById("childContent").innerHTML = chtml;  //子ページ
-
-
-  const iframe = document.getElementById("oldApp");
-
-  setDomEvent("btnHide","change", (e) => { //select 停止/継続
-    iframe.style.display = e.target.value;
-  });
-*/
 }
   
 function docOpen(){
@@ -146,7 +105,7 @@ window.addEventListener("DOMContentLoaded", async () => {
  // anDesign.init(); 
   parts.dbgBtn();
   db_dbRead();
-  MC3.test();   //debug
+//  MC3.test();   //debug
 
   cMsg(`初期　読み出し完了`);
  

@@ -1,5 +1,4 @@
 //canvas2.js
-import { MC3 } from "./canvas3.js"; //debug
 
 //常数
  //用紙サイズ
@@ -278,7 +277,7 @@ function draw(ll, col = null, cid = null){  //canvasに線を引く
 
 
 function baseInit(bid){ //canvasの初期化
-  MC3.baseInit(bid); return;
+//  MC3.baseInit(bid); return;
   
   function setBoxAcl(xy, y, box){
     if(box){
@@ -321,6 +320,7 @@ export const MC2 = {
 //    get ctx() {return ctx},
     set ctx(val) {ctx = val},
     set canvas(val) {canvas = val},
+    canvasCenter,
     
     //set cReduction(val) { cReduction = val; }, 
     //get cReduction() { return cReduction; }

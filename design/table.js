@@ -130,6 +130,7 @@ const nameTbl = {
       }
       td.textContent = value.toFixed(1).replace(/\.0$/, '');
       if (ds.name === "taper_i"){
+        /* テーパが変わった後退角も変わる必要あり。
         const info = {
           name: "sweep_i",
           val: dbdBase().base[pat][Number(td.dataset.row) + 2][3],
@@ -137,6 +138,7 @@ const nameTbl = {
           col: 3,
           pat: pat
         };
+        */
         //BASE.sweep_pd(dbdBase().base[pat][Number(td.dataset.row) + 2][3]);
 //5/4        BASE.sweep_pd(info);
         //return;
@@ -177,48 +179,13 @@ function setColor(pat, name, col = "") { //テーブル変数の色づけ
   const td = getTd(pat, name);
   td.style.backgroundColor = col;
 }
-function setup(ix,base, pat) {  //テーブル初期表示
+function setup(ix,base, pat) {  //テーブル作成
   function addTd(name,ds,val){
     const td = getTd(pat, name);
    cMsg (`addTd ${name} ${ds} ${val}`)
     td.dataset[ds] = val;
     // if ("ds" in td.dataset) {   cMsg(td.dataset.ds);  }
   }
-  /*
-  let selectedTd = null;  //最後に選択したテーブル
-  function clickHandl(e){ //画面全体のクリックを拾うイベント
-    if(true){
-      if (e.target.tagName === "SELECT" || e.target.closest("select")) {
-        return;
-      }
-    }else{
-      if (e.target.closest("td")?.querySelector("select")) {
-        if (e.target.closest("select")) return;
-      }
-    }
-    const td = e.target.closest("td");  //クリックされた要素から最も近いtdを取得
-    if (td) { 
-      if(selectedTd !== td){
-        if (selectedTd) {
-          selectedTd.classList.remove("active");  // 前回選択されたtdのハイライトを解除
-        }
-        selectedTd = td;
-        if (selectedTd)   //tdがクリックされた場合
-//          selectedTd.classList.add("active"); // 選択されたtdをハイライト
-            setTimeout(() => {
-              selectedTd.classList.add("active");
-            }, 0);
-      }else{
-        if (document.activeElement) {
-            document.activeElement.blur();
-        }
-        e.preventDefault(); // ← これ追加
-        //return; //同じセルがクリックされたら何もしない
-      }
-    }
-  }
-  */
-
   const tableDom = document.getElementById("dgnTable" + String(ix));  //DOM
   tableDom.innerHTML = "";  //クリアテーブル
   const block = dbdBase()[base][pat];        //dbVal.blocks[name];
@@ -226,9 +193,9 @@ function setup(ix,base, pat) {  //テーブル初期表示
 //  table.addEventListener("click", clickHandl);
   table.className = "cell-block";
   table.dataset.block = pat;
-  for (let i = 0; i < block.length; i += 2) {   //row
+  for (let i = 0; i < block.length; i++) {   //row
     const row = block[i];
-    const row2 = block[i+1];
+    const row2 = block[i];
     const tr = document.createElement("tr");
     for (let j = 0; j < 4; j++) {               //col 0～3
       const td = document.createElement("td");
@@ -239,7 +206,7 @@ function setup(ix,base, pat) {  //テーブル初期表示
       td.dataset.row = i;
       td.dataset.col = j;
       const name = row2[j];           //セルの変数名
-      if(name !== ""){
+      if(j != 0  && name !== ""){
         td.dataset.name = name;
         const val = dspVal(dbdBase().val[base][pat][name],1);
         //td.textContent = val? val: "";  //変数値で初期化
