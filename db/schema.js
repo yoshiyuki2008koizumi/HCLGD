@@ -1,6 +1,6 @@
 // schema.js　DB管理情報
 export const DB_NAME = "HCLGD";
-export const DB_VERSION = 3;
+export const DB_VERSION = 4;
 
 // ストア定義
 export const STORES = [
